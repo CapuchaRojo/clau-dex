@@ -1,11 +1,11 @@
 # Scripts
 
-Bootstrap and local helper scripts live here.
+Local bootstrap helpers live here.
 
 ## Current Scripts
-- `clau-dex.ps1`: the first CLI-first orchestration shell for checking repo state, summarizing operating rules, and scaffolding focused agent prompt files
+- `clau-dex.ps1`: a small CLI-first shell for repo status, operating-rule summaries, and focused agent scaffolding
 
 ## Script Rules
-- keep scripts optional and locally understandable
-- avoid external dependencies unless they are documented in-repo
-- prefer small command surfaces over speculative automation
+- Keep scripts optional and locally understandable.
+- Avoid external dependencies unless they are documented in-repo.
+- Prefer small command surfaces over speculative automation.

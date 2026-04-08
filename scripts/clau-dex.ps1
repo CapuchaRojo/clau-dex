@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("help", "status", "docs", "prompts", "agents", "rules", "new-agent", "scaffold-agent")]
+    [ValidateSet("help", "status", "docs", "prompts", "agents", "rules", "scaffold-agent", "new-agent")]
     [string]$Command = "help"
 ,
     [Parameter(Position = 1)]
@@ -14,6 +14,7 @@ $AgentsRoot = Join-Path $RepoRoot "agents"
 $SuperAgentsRoot = Join-Path $AgentsRoot "super-agents"
 $DocsRoot = Join-Path $RepoRoot "docs"
 $PromptsRoot = Join-Path $RepoRoot "prompts"
+$VisibleCommands = @("help", "status", "docs", "prompts", "agents", "rules", "scaffold-agent")
 
 function Get-RelativeFileList {
     param(
@@ -43,23 +44,28 @@ function ConvertTo-Slug {
 }
 
 function Show-Help {
+    $commandLines = @(
+        "  help            Show this command summary"
+        "  status          Show the current executable repository surface"
+        "  docs            List checked-in docs"
+        "  prompts         List prompt packs"
+        "  agents          List agent definitions"
+        "  rules           Print the current operating rules summary"
+        "  scaffold-agent  Scaffold a focused agent prompt in agents/super-agents/"
+    )
+
     @(
         "clau-dex CLI shell"
         ""
         "Usage:"
-        "  .\scripts\clau-dex.ps1 [help|status|docs|prompts|agents|rules]"
-        "  .\scripts\clau-dex.ps1 new-agent <name>"
         "  .\scripts\clau-dex.ps1 scaffold-agent <name>"
+        "  .\scripts\clau-dex.ps1 [help|status|docs|prompts|agents|rules]"
         ""
         "Commands:"
-        "  help     Show this command summary"
-        "  status   Show the current executable repository surface"
-        "  docs     List checked-in docs"
-        "  prompts  List prompt packs"
-        "  agents   List agent definitions"
-        "  rules    Print the current operating rules summary"
-        "  new-agent Scaffold a focused agent prompt in agents/super-agents/"
-        "  scaffold-agent Scaffold a focused agent prompt in agents/super-agents/"
+    ) + $commandLines + @(
+        ""
+        "Compatibility:"
+        "  new-agent is kept as an alias for scaffold-agent"
     ) | Write-Output
 }
 
@@ -77,7 +83,7 @@ function Show-Status {
         "Runtime status: no packaged app runtime, dependency manager, or external integration is present"
         ""
         "Commands:"
-        "  help, status, docs, prompts, agents, rules, new-agent, scaffold-agent"
+        "  $($VisibleCommands -join ', ')"
         ""
         "Checked-in surface:"
         "  Docs: $($docFiles.Count) file(s)"
@@ -85,7 +91,8 @@ function Show-Status {
         "  Agent definitions: $($agentFiles.Count) file(s)"
         ""
         "Orchestration slice:"
-        "  new-agent and scaffold-agent create a focused agent prompt markdown file under agents/super-agents/"
+        "  scaffold-agent creates a focused agent prompt markdown file under agents/super-agents/"
+        "  new-agent remains available as a compatibility alias"
         ""
         "Still out of scope:"
         "  No network behavior"
@@ -148,7 +155,7 @@ function New-AgentScaffold {
     )
 
     if ([string]::IsNullOrWhiteSpace($AgentName)) {
-        throw "new-agent requires a name. Example: .\scripts\clau-dex.ps1 new-agent repo-checker"
+        throw "scaffold-agent requires a name. Example: .\scripts\clau-dex.ps1 scaffold-agent repo-checker"
     }
 
     $slug = ConvertTo-Slug -Value $AgentName
@@ -216,12 +223,12 @@ function New-AgentScaffold {
 }
 
 switch ($Command) {
+    "new-agent" { New-AgentScaffold -AgentName $Name }
     "help" { Show-Help }
     "status" { Show-Status }
     "docs" { Show-Group -Title "Docs" -Path $DocsRoot }
     "prompts" { Show-Group -Title "Prompts" -Path $PromptsRoot }
     "agents" { Show-Group -Title "Agents" -Path $AgentsRoot }
     "rules" { Show-Rules }
-    "new-agent" { New-AgentScaffold -AgentName $Name }
     "scaffold-agent" { New-AgentScaffold -AgentName $Name }
 }

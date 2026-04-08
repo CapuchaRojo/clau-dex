@@ -7,6 +7,7 @@ Store reusable prompt packs here.
 - `chatgpt/`: planning and launch prompts for ChatGPT / CLAU-DEX PRIME
 
 Current reusable launch assets include:
+- `codex/lawful-reference-audit.md`: lawful audit lane for public, open-source, owned, or explicitly authorized external repos with explicit prohibited-source boundaries
 - `chatgpt/spawn-template.md`: fuller task-shaping prompt for turning rough intent into a launch brief
 - `chatgpt/task-brief-template.md`: lighter execution-ready brief template for starting consistent scoped work with a proposed gammit and checkpoint
 

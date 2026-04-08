@@ -11,16 +11,21 @@ Define and bootstrap a local-first, CLI-first engineering system centered on:
 
 ## Status
 Bootstrap phase. The repository currently contains documentation, prompt and agent folders,
-local Codex configuration, an initial local CLI shell script, and no dependency graph or
+local Codex configuration, a local CLI shell script with a narrow bootstrap audit command, and no dependency graph or
 test harness.
 
 ## Current Layout
 - `docs/`: charter, roadmap, architecture notes, and phased plans
 - `agents/`: agent role definitions and starting prompts
 - `prompts/`: reusable prompt packs and execution prompts
-- `scripts/`: local bootstrap helpers, including the first CLI shell entry script
+- `scripts/`: local bootstrap helpers, including the first CLI shell entry script and bootstrap audit command
 - `src/`: implementation code when implementation begins
 - `.codex/config.toml`: project-scoped Codex defaults
+
+## Local Shell Surface
+The PowerShell shell in `scripts/clau-dex.ps1` remains a bootstrap-stage repository helper.
+Its current command surface includes local status inspection, narrow bootstrap auditing, repo
+asset listing, operating-rule summaries, and focused agent scaffolding.
 
 ## Working Rules
 - Treat the checked-in repository as the source of truth.

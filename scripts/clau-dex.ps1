@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("help", "status", "docs", "prompts", "agents", "rules", "scaffold-agent", "new-agent")]
+    [ValidateSet("help", "status", "audit", "docs", "prompts", "agents", "rules", "scaffold-agent", "new-agent")]
     [string]$Command = "help"
 ,
     [Parameter(Position = 1)]
@@ -14,7 +14,9 @@ $AgentsRoot = Join-Path $RepoRoot "agents"
 $SuperAgentsRoot = Join-Path $AgentsRoot "super-agents"
 $DocsRoot = Join-Path $RepoRoot "docs"
 $PromptsRoot = Join-Path $RepoRoot "prompts"
-$VisibleCommands = @("help", "status", "docs", "prompts", "agents", "rules", "scaffold-agent")
+$ScriptsRoot = Join-Path $RepoRoot "scripts"
+$SrcRoot = Join-Path $RepoRoot "src"
+$VisibleCommands = @("help", "status", "audit", "docs", "prompts", "agents", "rules", "scaffold-agent")
 
 function Get-RelativeFileList {
     param(
@@ -47,6 +49,7 @@ function Show-Help {
     $commandLines = @(
         "  help            Show this command summary"
         "  status          Show the current executable repository surface"
+        "  audit           Check the narrow bootstrap repository invariants"
         "  docs            List checked-in docs"
         "  prompts         List prompt packs"
         "  agents          List agent definitions"
@@ -59,7 +62,7 @@ function Show-Help {
         ""
         "Usage:"
         "  .\scripts\clau-dex.ps1 scaffold-agent <name>"
-        "  .\scripts\clau-dex.ps1 [help|status|docs|prompts|agents|rules]"
+        "  .\scripts\clau-dex.ps1 [help|status|audit|docs|prompts|agents|rules]"
         ""
         "Commands:"
     ) + $commandLines + @(
@@ -79,7 +82,7 @@ function Show-Status {
         ""
         "Repo root: $RepoRoot"
         "Shell path: .\scripts\clau-dex.ps1"
-        "Shell role: local-first repository helper with one narrow orchestration action"
+        "Shell role: local-first repository helper with one narrow orchestration action and one narrow bootstrap audit"
         "Runtime status: no packaged app runtime, dependency manager, or external integration is present"
         ""
         "Commands:"
@@ -93,6 +96,7 @@ function Show-Status {
         "Orchestration slice:"
         "  scaffold-agent creates a focused agent prompt markdown file under agents/super-agents/"
         "  new-agent remains available as a compatibility alias"
+        "  audit checks a small hardcoded bootstrap-state surface"
         ""
         "Still out of scope:"
         "  No network behavior"
@@ -119,6 +123,196 @@ function Show-Group {
     }
 
     $items | ForEach-Object { Write-Output "  $_" }
+}
+
+function Add-AuditResult {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[pscustomobject]]$Results,
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("PASS", "WARN", "FAIL")]
+        [string]$Level,
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    $Results.Add([pscustomobject]@{
+        Level = $Level
+        Message = $Message
+    })
+}
+
+function Test-RepoPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[pscustomobject]]$Results,
+        [Parameter(Mandatory = $true)]
+        [string]$RelativePath,
+        [switch]$Directory
+    )
+
+    $fullPath = Join-Path $RepoRoot $RelativePath
+    $exists = if ($Directory) {
+        Test-Path -LiteralPath $fullPath -PathType Container
+    }
+    else {
+        Test-Path -LiteralPath $fullPath -PathType Leaf
+    }
+
+    if ($exists) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "$RelativePath exists"
+        return
+    }
+
+    Add-AuditResult -Results $Results -Level "FAIL" -Message "$RelativePath is missing"
+}
+
+function Test-ForbiddenFilesAbsent {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[pscustomobject]]$Results,
+        [Parameter(Mandatory = $true)]
+        [string[]]$RelativePaths,
+        [Parameter(Mandatory = $true)]
+        [string]$Label
+    )
+
+    $found = @(
+        foreach ($relativePath in $RelativePaths) {
+            $fullPath = Join-Path $RepoRoot $relativePath
+
+            if (Test-Path -LiteralPath $fullPath) {
+                $relativePath
+            }
+        }
+    )
+
+    if ($found.Count -eq 0) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "$Label absent"
+        return
+    }
+
+    Add-AuditResult -Results $Results -Level "FAIL" -Message "$Label present: $($found -join ', ')"
+}
+
+function Show-Audit {
+    $results = [System.Collections.Generic.List[pscustomobject]]::new()
+
+    $requiredFiles = @(
+        "README.md",
+        "AGENTS.md",
+        ".codex/config.toml",
+        "scripts/clau-dex.ps1",
+        "scripts/README.md",
+        "docs/BOOTSTRAP_PLAN.md",
+        "docs/REPOSITORY_ARCHITECTURE.md",
+        "docs/CLI_FIRST_SHELL.md",
+        "src/README.md"
+    )
+
+    $requiredDirectories = @(
+        "docs",
+        "agents",
+        "agents/super-agents",
+        "prompts",
+        "prompts/chatgpt",
+        "prompts/codex",
+        "scripts",
+        "src"
+    )
+
+    foreach ($relativePath in $requiredFiles) {
+        Test-RepoPath -Results $results -RelativePath $relativePath
+    }
+
+    foreach ($relativePath in $requiredDirectories) {
+        Test-RepoPath -Results $results -RelativePath $relativePath -Directory
+    }
+
+    $srcFiles = @()
+
+    if (Test-Path -LiteralPath $SrcRoot -PathType Container) {
+        $srcFiles = @(Get-ChildItem -LiteralPath $SrcRoot -File | Select-Object -ExpandProperty Name)
+    }
+
+    if (($srcFiles.Count -eq 1) -and ($srcFiles[0] -eq "README.md")) {
+        Add-AuditResult -Results $results -Level "PASS" -Message "src/ contains only README.md"
+    }
+    elseif ($srcFiles.Count -eq 0) {
+        Add-AuditResult -Results $results -Level "FAIL" -Message "src/ is missing README.md"
+    }
+    else {
+        Add-AuditResult -Results $results -Level "FAIL" -Message "src/ should contain only README.md, found: $($srcFiles -join ', ')"
+    }
+
+    $scriptsReadme = Join-Path $ScriptsRoot "README.md"
+    $scriptReadmeDocumentsShell = $false
+
+    if (Test-Path -LiteralPath $scriptsReadme -PathType Leaf) {
+        $scriptReadmeDocumentsShell = Select-String -Path $scriptsReadme -Pattern "clau-dex\.ps1" -Quiet
+    }
+
+    if ($scriptReadmeDocumentsShell) {
+        Add-AuditResult -Results $results -Level "PASS" -Message "scripts/README.md documents scripts/clau-dex.ps1"
+    }
+    else {
+        Add-AuditResult -Results $results -Level "FAIL" -Message "scripts/README.md does not document scripts/clau-dex.ps1"
+    }
+
+    Test-ForbiddenFilesAbsent -Results $results -RelativePaths @(
+        "package.json",
+        "package-lock.json",
+        "npm-shrinkwrap.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "yarn.lock",
+        "bun.lock",
+        "bun.lockb",
+        "Cargo.toml",
+        "Cargo.lock",
+        "pyproject.toml",
+        "poetry.lock",
+        "Pipfile",
+        "Pipfile.lock",
+        "requirements.txt",
+        "composer.json",
+        "composer.lock",
+        "Gemfile",
+        "Gemfile.lock",
+        "go.mod",
+        "go.sum"
+    ) -Label "package manifests and lockfiles"
+
+    Test-ForbiddenFilesAbsent -Results $results -RelativePaths @(
+        ".github/workflows",
+        ".gitlab-ci.yml",
+        "azure-pipelines.yml",
+        "Dockerfile",
+        "docker-compose.yml",
+        "docker-compose.yaml",
+        "compose.yml",
+        "compose.yaml",
+        "deploy",
+        "deployment"
+    ) -Label "CI, container, and deployment artifacts"
+
+    $failCount = @($results | Where-Object { $_.Level -eq "FAIL" }).Count
+    $warnCount = @($results | Where-Object { $_.Level -eq "WARN" }).Count
+    $passCount = @($results | Where-Object { $_.Level -eq "PASS" }).Count
+    $overall = if ($failCount -gt 0) { "FAIL" } elseif ($warnCount -gt 0) { "WARN" } else { "PASS" }
+
+    Write-Output "clau-dex bootstrap audit"
+    Write-Output ""
+
+    foreach ($result in $results) {
+        Write-Output ("[{0}] {1}" -f $result.Level, $result.Message)
+    }
+
+    Write-Output ""
+    Write-Output ("Summary: {0} ({1} pass, {2} warn, {3} fail)" -f $overall, $passCount, $warnCount, $failCount)
 }
 
 function Show-Rules {
@@ -226,6 +420,7 @@ switch ($Command) {
     "new-agent" { New-AgentScaffold -AgentName $Name }
     "help" { Show-Help }
     "status" { Show-Status }
+    "audit" { Show-Audit }
     "docs" { Show-Group -Title "Docs" -Path $DocsRoot }
     "prompts" { Show-Group -Title "Prompts" -Path $PromptsRoot }
     "agents" { Show-Group -Title "Agents" -Path $AgentsRoot }

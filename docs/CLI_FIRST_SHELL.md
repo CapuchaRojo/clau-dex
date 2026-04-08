@@ -16,6 +16,7 @@ That repeated workflow is sufficient to justify one small executable artifact in
 The first CLI shell is intentionally narrow. It should:
 - present a help surface
 - report the current repository bootstrap status from checked-in files
+- audit a small hardcoded bootstrap-state surface from checked-in files
 - list key documentation, prompt, and agent assets
 - print a concise operating-rules summary from the current repo docs
 - scaffold a focused agent prompt file from a local template shape
@@ -36,6 +37,7 @@ The first shell lives in `scripts/` as a local PowerShell entry script. This kee
 The first command surface should stay small and explicit:
 - `help`
 - `status`
+- `audit`
 - `docs`
 - `prompts`
 - `agents`
@@ -45,10 +47,21 @@ The first command surface should stay small and explicit:
 
 `new-agent <name>` and `scaffold-agent <name>` both expose the first real orchestration slice in the shell. They create a small Markdown scaffold under `agents/super-agents/` so repeated agent-role authoring starts from a consistent local template instead of a blank file.
 
+`audit` is the second executable slice. It checks only a narrow bootstrap-state surface:
+- required top-level files and directories that define the documented bootstrap repo shape
+- expected docs, prompt, agent, script, and `src/` asset folders
+- `src/` still contains only `README.md`
+- package manifests and lockfiles are absent
+- CI, container, and deployment artifacts are absent
+- `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it
+
+The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
+
 ## Verification
 Manual verification for this shell definition:
 - Confirm the shell is documented as a local repository helper, not a full runtime.
 - Confirm the command surface remains small and local-first.
+- Confirm `audit` reports PASS / WARN / FAIL results against the documented bootstrap-state checks.
 - Confirm `rules` summarizes the current operating constraints without implying extra automation.
 - Confirm `new-agent <name>` creates a focused agent prompt file under `agents/super-agents/`.
 - Confirm `scaffold-agent <name>` creates the same focused agent prompt file under `agents/super-agents/`.

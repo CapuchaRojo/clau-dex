@@ -23,6 +23,10 @@ and no dependency graph or formal test harness.
 - `src/`: implementation code when implementation begins
 - `.codex/config.toml`: project-scoped Codex defaults
 
+Key workflow docs include:
+- `docs/OPERATING_MODEL.md`: role split and execution flow between CLAU-DEX PRIME and Codex
+- `docs/GAMMIT_PROTOCOL.md`: task-specific validation doctrine for meaningful work
+
 ## Local Shell Surface
 The PowerShell shell in `scripts/clau-dex.ps1` remains a bootstrap-stage repository helper.
 Its current command surface includes local status inspection, narrow bootstrap auditing, repo
@@ -30,15 +34,17 @@ asset listing, operating-rule summaries, a concise local prompt/agent briefing, 
 agent scaffolding.
 
 ## Bootstrap Validation
-The repository includes one minimal GitHub Actions workflow that runs the current PowerShell
-shell validation surface on `push` and `pull_request`:
+The repository uses a task-specific GAMMIT protocol for meaningful work rather than one universal validation command. Current bootstrap validation assets include one minimal GitHub Actions workflow that runs the current PowerShell shell validation surface on `push` and `pull_request`:
 - `./scripts/clau-dex.ps1 help`
 - `./scripts/clau-dex.ps1 status`
 - `./scripts/clau-dex.ps1 audit`
 - `./scripts/clau-dex.ps1 brief`
 
+For bootstrap-stage repo work, a gammit may combine shell checks, repo-truth checks, manual review, and CI status depending on the task.
+
 ## Working Rules
 - Treat the checked-in repository as the source of truth.
 - Keep the project clean-room and avoid implying unimplemented capabilities.
 - Prefer Markdown, plain text, and local scripts over external services.
+- Treat validation as task-specific: choose and run the right gammit for the work instead of assuming one fixed command.
 - Add runtime code only after the architecture and workflow docs call for it.

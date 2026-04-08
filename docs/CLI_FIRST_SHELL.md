@@ -54,16 +54,21 @@ The first command surface should stay small and explicit:
 - expected docs, prompt, agent, script, and `src/` asset folders
 - `src/` still contains only `README.md`
 - package manifests and lockfiles are absent
+- prompt packs still expose the minimum `brief` metadata heading `## Goal`
+- super-agents still expose the minimum `brief` metadata heading `## Purpose`
 - one minimal GitHub Actions workflow exists only to validate `help`, `status`, and `audit` on `push` and `pull_request`
 - other CI, container, and deployment artifacts are absent
 - `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it
 
-The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
+Missing `brief` metadata headings warn instead of fail so the audit can flag drift without blocking bootstrap work. The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
 
-`brief` is the third executable slice. It turns the checked-in prompt packs and super-agent files into a short local picker brief by reading expected markdown headings such as goals, purposes, and best-use bullets. It should:
+`brief` is the third executable slice. It turns the checked-in prompt packs and super-agent files into a short local picker brief by reading local markdown headings such as goals, purposes, and best-use bullets. It should:
 - stay fully local and deterministic
 - summarize only checked-in prompt and agent assets
 - help operators choose between prompt packs and super-agent roles faster
+- degrade gracefully when preferred headings are missing by trying a small documented set of heading aliases
+- show explicit missing-metadata notices when summary or best-use fields cannot be read
+- perform a tiny convention check that reports when the preferred prompt or agent headings are absent
 - avoid remote search, network access, embeddings, or AI-generated recommendations
 
 The briefing stays intentionally lightweight. It is not a semantic search engine, ranking system, or dynamic planner.

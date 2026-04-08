@@ -165,6 +165,31 @@ function Get-MarkdownSectionContent {
     return @($content)
 }
 
+function Get-MarkdownSectionMatch {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Lines,
+        [Parameter(Mandatory = $true)]
+        [string[]]$Headings
+    )
+
+    foreach ($heading in @($Headings)) {
+        $content = @(Get-MarkdownSectionContent -Lines $Lines -Heading $heading)
+
+        if ($content.Count -gt 0) {
+            return [pscustomobject]@{
+                Heading = $heading
+                Content = $content
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        Heading = $null
+        Content = @()
+    }
+}
+
 function Get-FirstNonEmptyLine {
     param(
         [Parameter(Mandatory = $true)]
@@ -206,6 +231,30 @@ function Get-BulletLines {
     return @($bullets | Select-Object -First $MaxCount)
 }
 
+function Get-BriefConvention {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("Prompt", "Agent")]
+        [string]$Kind
+    )
+
+    if ($Kind -eq "Prompt") {
+        return [pscustomobject]@{
+            SummaryHeadings = @("Goal", "Purpose", "Overview")
+            BestForHeadings = @("Use This Prompt When", "Use When", "Best Used For")
+            PreferredSummaryHeading = "Goal"
+            PreferredBestForHeading = "Use This Prompt When"
+        }
+    }
+
+    return [pscustomobject]@{
+        SummaryHeadings = @("Purpose", "Goal", "Overview")
+        BestForHeadings = @("Best Used For", "Use When", "Recommended For")
+        PreferredSummaryHeading = "Purpose"
+        PreferredBestForHeading = "Best Used For"
+    }
+}
+
 function Get-MarkdownBriefRecord {
     param(
         [Parameter(Mandatory = $true)]
@@ -223,17 +272,39 @@ function Get-MarkdownBriefRecord {
     }
     $displayName = $displayName -join ' '
 
-    if ($Kind -eq "Prompt") {
-        $summary = Get-FirstNonEmptyLine -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Goal")
-        $when = Get-BulletLines -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Use This Prompt When") -MaxCount 2
+    $convention = Get-BriefConvention -Kind $Kind
+    $summaryMatch = Get-MarkdownSectionMatch -Lines $lines -Headings $convention.SummaryHeadings
+    $bestForMatch = Get-MarkdownSectionMatch -Lines $lines -Headings $convention.BestForHeadings
+    $summary = Get-FirstNonEmptyLine -Lines $summaryMatch.Content
+    $when = Get-BulletLines -Lines $bestForMatch.Content -MaxCount 2
+    $notices = [System.Collections.Generic.List[string]]::new()
+    $missingConventionHeadings = [System.Collections.Generic.List[string]]::new()
+
+    if ([string]::IsNullOrWhiteSpace($summaryMatch.Heading)) {
+        $missingConventionHeadings.Add($convention.PreferredSummaryHeading)
     }
-    else {
-        $summary = Get-FirstNonEmptyLine -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Purpose")
-        $when = Get-BulletLines -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Best Used For") -MaxCount 2
+    elseif ($summaryMatch.Heading -ne $convention.PreferredSummaryHeading) {
+        $notices.Add("Summary heading fallback used: expected '$($convention.PreferredSummaryHeading)', found '$($summaryMatch.Heading)'.")
+    }
+
+    if ([string]::IsNullOrWhiteSpace($bestForMatch.Heading)) {
+        $missingConventionHeadings.Add($convention.PreferredBestForHeading)
+    }
+    elseif ($bestForMatch.Heading -ne $convention.PreferredBestForHeading) {
+        $notices.Add("Best-for heading fallback used: expected '$($convention.PreferredBestForHeading)', found '$($bestForMatch.Heading)'.")
     }
 
     if ([string]::IsNullOrWhiteSpace($summary)) {
-        $summary = "Use $displayName when a local briefing needs this asset's named workflow or role."
+        $summary = "Missing metadata: no summary text found under the supported headings. Review the file directly before using it."
+        $notices.Add("Summary metadata is missing or empty.")
+    }
+
+    if ($when.Count -eq 0) {
+        $notices.Add("Best-for metadata is missing or has no bullet list.")
+    }
+
+    if ($missingConventionHeadings.Count -gt 0) {
+        $notices.Add("Convention check: missing expected heading(s): $($missingConventionHeadings -join ', ').")
     }
 
     return [pscustomobject]@{
@@ -244,6 +315,7 @@ function Get-MarkdownBriefRecord {
         Summary = $summary
         BestFor = @($when)
         NextUse = if ($when.Count -gt 0) { $when[0] } else { $null }
+        Notices = @($notices)
     }
 }
 
@@ -273,7 +345,7 @@ function Show-BriefSection {
             Write-Output "    Best for: $($record.BestFor -join '; ')"
         }
         else {
-            Write-Output "    Best for: (not listed)"
+            Write-Output "    Best for: Missing metadata: no supported best-for bullets were found."
         }
 
         if (-not [string]::IsNullOrWhiteSpace($record.NextUse)) {
@@ -281,6 +353,10 @@ function Show-BriefSection {
         }
         else {
             Write-Output "    Next use: Review the file directly before choosing it."
+        }
+
+        if ($record.Notices.Count -gt 0) {
+            Write-Output "    Notices: $($record.Notices -join ' ')"
         }
 
         Write-Output ""
@@ -358,6 +434,64 @@ function Test-ForbiddenFilesAbsent {
     }
 
     Add-AuditResult -Results $Results -Level "FAIL" -Message "$Label present: $($found -join ', ')"
+}
+
+function Test-BriefMetadataConvention {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[pscustomobject]]$Results,
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("Prompt", "Agent")]
+        [string]$Kind,
+        [Parameter(Mandatory = $true)]
+        [string]$RootPath
+    )
+
+    if (-not (Test-Path -LiteralPath $RootPath -PathType Container)) {
+        return
+    }
+
+    $convention = Get-BriefConvention -Kind $Kind
+    $preferredHeading = $convention.PreferredSummaryHeading
+    $files = @()
+
+    if ($Kind -eq "Prompt") {
+        $files = @(
+            Get-ChildItem -LiteralPath $RootPath -Recurse -File -Filter *.md |
+                Where-Object { $_.Name -ne "README.md" } |
+                Sort-Object FullName
+        )
+    }
+    else {
+        $files = @(
+            Get-ChildItem -LiteralPath $RootPath -File -Filter *.md |
+                Sort-Object FullName
+        )
+    }
+
+    if ($files.Count -eq 0) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "$Kind brief metadata check skipped: no files found"
+        return
+    }
+
+    $missingHeading = @(
+        foreach ($file in $files) {
+            $lines = @(Get-Content -LiteralPath $file.FullName)
+            $match = Get-MarkdownSectionMatch -Lines $lines -Headings @($preferredHeading)
+
+            if ([string]::IsNullOrWhiteSpace($match.Heading)) {
+                Resolve-Path -Relative $file.FullName
+            }
+        }
+    )
+
+    if ($missingHeading.Count -eq 0) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "$Kind brief metadata check: all files include ## $preferredHeading"
+    }
+    else {
+        Add-AuditResult -Results $Results -Level "WARN" -Message "$Kind brief metadata check: missing ## $preferredHeading in $($missingHeading -join ', ')"
+    }
 }
 
 function Show-Audit {
@@ -447,6 +581,9 @@ function Show-Audit {
         "go.mod",
         "go.sum"
     ) -Label "package manifests and lockfiles"
+
+    Test-BriefMetadataConvention -Results $results -Kind "Prompt" -RootPath $PromptsRoot
+    Test-BriefMetadataConvention -Results $results -Kind "Agent" -RootPath $SuperAgentsRoot
 
     $workflowPath = Join-Path $RepoRoot ".github/workflows/bootstrap-shell-validation.yml"
 

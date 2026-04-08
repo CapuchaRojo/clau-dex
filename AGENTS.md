@@ -28,12 +28,14 @@ If you add a new top-level directory, update `README.md` and the nearest folder 
 - Prefer docs-only changes when the task is architectural or policy-oriented.
 - Do not create placeholder application modules, fake CLIs, or speculative config files to suggest progress.
 - Before adding any executable artifact, document why the manual workflow is insufficient.
+- For every meaningful task, define and run a task-specific gammit as described in `docs/GAMMIT_PROTOCOL.md`.
 
 ## Documentation Rules
 - Update `README.md` when the repo's advertised purpose, status, or top-level structure changes.
 - Put durable architecture and planning material in `docs/`, not scattered across prompts.
 - Keep folder `README.md` files short and role-specific; avoid duplicating policy text everywhere.
 - Record verification steps in the same change, even if they are manual.
+- Record the chosen gammit and its evidence in the same change when the task is meaningful enough to checkpoint.
 - If a new convention is introduced for prompts, agents, or scripts, document it before relying on it.
 
 ## Git Checkpoint Discipline
@@ -67,6 +69,6 @@ A change is done when:
 - the affected files are consistent with the charter and roadmap,
 - the scope is reflected in repo docs when structure or workflow changed,
 - no uninstalled capability is implied,
-- verification steps are recorded, even if verification is manual,
+- the task-specific gammit has been run and recorded, even if part of it is manual,
 - `git diff` is tight and reviewable,
 - the change is ready to stand alone as a checkpoint commit.

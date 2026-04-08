@@ -11,13 +11,14 @@ Define and bootstrap a local-first, CLI-first engineering system centered on:
 
 ## Status
 Bootstrap phase. The repository currently contains documentation, prompt and agent folders,
-local Codex configuration, and no application runtime, dependency graph, or test harness.
+local Codex configuration, an initial local CLI shell script, and no dependency graph or
+test harness.
 
 ## Current Layout
 - `docs/`: charter, roadmap, architecture notes, and phased plans
 - `agents/`: agent role definitions and starting prompts
 - `prompts/`: reusable prompt packs and execution prompts
-- `scripts/`: local bootstrap and validation helpers when they are introduced
+- `scripts/`: local bootstrap helpers, including the first CLI shell entry script
 - `src/`: implementation code when implementation begins
 - `.codex/config.toml`: project-scoped Codex defaults
 

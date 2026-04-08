@@ -5,7 +5,7 @@ Advance `clau-dex` from repository bootstrap into a documented, reviewable found
 without introducing speculative runtime code.
 
 ## Phase 0: Repository Grounding
-Status: current focus
+Status: complete
 
 Deliverables:
 - tightened repository policy in `AGENTS.md`
@@ -18,6 +18,8 @@ Verification:
 - confirm no runtime code, frameworks, or external services were introduced
 
 ## Phase 1: Workflow Conventions
+Status: complete
+
 Deliverables:
 - conventions for prompt files in `prompts/`
 - conventions for agent role files in `agents/`
@@ -29,6 +31,8 @@ Exit criteria:
 - repeated bootstrap checks are documented and locally runnable
 
 ## Phase 2: Execution Surface Definition
+Status: current focus
+
 Deliverables:
 - first concrete definition of what belongs in `src/`
 - interface sketch for a CLI-first entry surface, if still warranted
@@ -39,6 +43,8 @@ Exit criteria:
 - the proposed execution surface does not require framework assumptions
 
 ## Phase 3: First Implementation Slice
+Status: next after the execution-surface checkpoint
+
 Deliverables:
 - minimal source code for the first agreed capability
 - matching local verification instructions

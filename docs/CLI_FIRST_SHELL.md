@@ -71,6 +71,8 @@ Missing `brief` metadata headings warn instead of fail so the audit can flag dri
 - perform a tiny convention check that reports when the preferred prompt or agent headings are absent
 - avoid remote search, network access, embeddings, or AI-generated recommendations
 
+The heading contract for that briefing behavior is documented in `docs/METADATA_CONVENTIONS.md`. That document is the repo truth for preferred headings, supported fallback headings, and current warning-only metadata drift behavior.
+
 The briefing stays intentionally lightweight. It is not a semantic search engine, ranking system, or dynamic planner.
 
 ## Verification

@@ -17,3 +17,4 @@ jobs:
           ./scripts/clau-dex.ps1 help
           ./scripts/clau-dex.ps1 status
           ./scripts/clau-dex.ps1 audit
+          ./scripts/clau-dex.ps1 brief

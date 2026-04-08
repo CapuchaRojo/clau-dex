@@ -3,7 +3,7 @@
 Local bootstrap helpers live here.
 
 ## Current Scripts
-- `clau-dex.ps1`: a small CLI-first shell for repo status, a narrow bootstrap audit, operating-rule summaries, and focused agent scaffolding
+- `clau-dex.ps1`: a small CLI-first shell for repo status, a narrow bootstrap audit, concise prompt/agent briefing, operating-rule summaries, and focused agent scaffolding
 
 ## Current Commands
 - `help`: show the shell command summary
@@ -12,6 +12,7 @@ Local bootstrap helpers live here.
 - `docs`: list checked-in docs
 - `prompts`: list prompt packs
 - `agents`: list agent definitions
+- `brief`: print a concise local briefing from checked-in prompt packs and super-agent files
 - `rules`: print the current operating rules summary
 - `scaffold-agent <name>`: create a focused agent scaffold under `agents/super-agents/`
 - `new-agent <name>`: compatibility alias for `scaffold-agent <name>`
@@ -27,3 +28,4 @@ and `pull_request` by running:
 - `./scripts/clau-dex.ps1 help`
 - `./scripts/clau-dex.ps1 status`
 - `./scripts/clau-dex.ps1 audit`
+- `./scripts/clau-dex.ps1 brief`

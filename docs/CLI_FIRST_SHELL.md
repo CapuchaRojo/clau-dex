@@ -18,6 +18,7 @@ The first CLI shell is intentionally narrow. It should:
 - report the current repository bootstrap status from checked-in files
 - audit a small hardcoded bootstrap-state surface from checked-in files
 - list key documentation, prompt, and agent assets
+- generate a concise local briefing from checked-in prompt packs and super-agent files
 - print a concise operating-rules summary from the current repo docs
 - scaffold a focused agent prompt file from a local template shape
 - avoid any dependency on package managers, frameworks, or external services
@@ -41,6 +42,7 @@ The first command surface should stay small and explicit:
 - `docs`
 - `prompts`
 - `agents`
+- `brief`
 - `rules`
 - `new-agent <name>`
 - `scaffold-agent <name>`
@@ -58,12 +60,21 @@ The first command surface should stay small and explicit:
 
 The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
 
+`brief` is the third executable slice. It turns the checked-in prompt packs and super-agent files into a short local picker brief by reading expected markdown headings such as goals, purposes, and best-use bullets. It should:
+- stay fully local and deterministic
+- summarize only checked-in prompt and agent assets
+- help operators choose between prompt packs and super-agent roles faster
+- avoid remote search, network access, embeddings, or AI-generated recommendations
+
+The briefing stays intentionally lightweight. It is not a semantic search engine, ranking system, or dynamic planner.
+
 ## Verification
 Manual verification for this shell definition:
 - Confirm the shell is documented as a local repository helper, not a full runtime.
 - Confirm the command surface remains small and local-first.
 - Confirm `audit` reports PASS / WARN / FAIL results against the documented bootstrap-state checks.
-- Confirm the minimal GitHub Actions workflow stays limited to validating `help`, `status`, and `audit`.
+- Confirm `brief` produces a concise local summary from checked-in prompt packs and super-agent files.
+- Confirm the minimal GitHub Actions workflow stays limited to validating `help`, `status`, `audit`, and `brief`.
 - Confirm `rules` summarizes the current operating constraints without implying extra automation.
 - Confirm `new-agent <name>` creates a focused agent prompt file under `agents/super-agents/`.
 - Confirm `scaffold-agent <name>` creates the same focused agent prompt file under `agents/super-agents/`.

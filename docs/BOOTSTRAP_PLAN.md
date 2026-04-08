@@ -31,19 +31,26 @@ Exit criteria:
 - repeated bootstrap checks are documented and locally runnable
 
 ## Phase 2: Execution Surface Definition
-Status: current focus
+Status: checkpoint reviewed; remain in bootstrap execution-surface hardening
 
 Deliverables:
 - first concrete definition of what belongs in `src/`
 - interface sketch for a CLI-first entry surface, if still warranted
 - explicit non-goals so implementation starts with tight scope
+- architecture checkpoint recording whether the next executable move stays in `scripts/` or moves into `src/`
 
 Exit criteria:
 - the repository has a single, documented first implementation target
 - the proposed execution surface does not require framework assumptions
+- the threshold for introducing `src/` code is written in `docs/` and grounded in checked-in executable truth
+
+Current review outcome:
+- the expanded shell and minimal CI validation are enough to review architecture direction
+- the next move remains in `scripts/` because the executable surface is still a repository helper, not a product runtime
+- before Phase 3 starts, the repo should harden shell-supported content conventions and define one source-level capability that is more than inspection, audit, or scaffolding
 
 ## Phase 3: First Implementation Slice
-Status: next after the execution-surface checkpoint
+Status: next after the execution-surface hardening checkpoint is closed
 
 Deliverables:
 - minimal source code for the first agreed capability

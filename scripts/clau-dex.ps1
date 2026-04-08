@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("help", "status", "audit", "docs", "prompts", "agents", "rules", "scaffold-agent", "new-agent")]
+    [ValidateSet("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "new-agent")]
     [string]$Command = "help"
 ,
     [Parameter(Position = 1)]
@@ -16,7 +16,7 @@ $DocsRoot = Join-Path $RepoRoot "docs"
 $PromptsRoot = Join-Path $RepoRoot "prompts"
 $ScriptsRoot = Join-Path $RepoRoot "scripts"
 $SrcRoot = Join-Path $RepoRoot "src"
-$VisibleCommands = @("help", "status", "audit", "docs", "prompts", "agents", "rules", "scaffold-agent")
+$VisibleCommands = @("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent")
 
 function Get-RelativeFileList {
     param(
@@ -53,6 +53,7 @@ function Show-Help {
         "  docs            List checked-in docs"
         "  prompts         List prompt packs"
         "  agents          List agent definitions"
+        "  brief           Generate a concise local briefing for prompt packs and super-agents"
         "  rules           Print the current operating rules summary"
         "  scaffold-agent  Scaffold a focused agent prompt in agents/super-agents/"
     )
@@ -62,7 +63,7 @@ function Show-Help {
         ""
         "Usage:"
         "  .\scripts\clau-dex.ps1 scaffold-agent <name>"
-        "  .\scripts\clau-dex.ps1 [help|status|audit|docs|prompts|agents|rules]"
+        "  .\scripts\clau-dex.ps1 [help|status|audit|docs|prompts|agents|brief|rules]"
         ""
         "Commands:"
     ) + $commandLines + @(
@@ -82,7 +83,7 @@ function Show-Status {
         ""
         "Repo root: $RepoRoot"
         "Shell path: .\scripts\clau-dex.ps1"
-        "Shell role: local-first repository helper with one narrow orchestration action and one narrow bootstrap audit"
+        "Shell role: local-first repository helper with narrow bootstrap auditing, briefing, and scaffolding commands"
         "Runtime status: no packaged app runtime, dependency manager, or external integration is present"
         ""
         "Commands:"
@@ -97,12 +98,13 @@ function Show-Status {
         "  scaffold-agent creates a focused agent prompt markdown file under agents/super-agents/"
         "  new-agent remains available as a compatibility alias"
         "  audit checks a small hardcoded bootstrap-state surface"
+        "  brief generates a structured local summary of checked-in prompt packs and super-agents"
         ""
         "Still out of scope:"
         "  No network behavior"
         "  No API integration"
         "  No formal test harness"
-        "  One minimal GitHub Actions workflow validates help, status, and audit"
+        "  One minimal GitHub Actions workflow validates help, status, audit, and brief"
         "  No implementation runtime in src/"
     ) | Write-Output
 }
@@ -124,6 +126,165 @@ function Show-Group {
     }
 
     $items | ForEach-Object { Write-Output "  $_" }
+}
+
+function Get-MarkdownSectionContent {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Lines,
+        [Parameter(Mandatory = $true)]
+        [string]$Heading
+    )
+
+    $normalizedLines = @($Lines)
+
+    $headingPattern = '^##\s+' + [Regex]::Escape($Heading) + '\s*$'
+    $startIndex = -1
+
+    for ($i = 0; $i -lt $normalizedLines.Count; $i++) {
+        if ($normalizedLines[$i] -match $headingPattern) {
+            $startIndex = $i + 1
+            break
+        }
+    }
+
+    if ($startIndex -lt 0) {
+        return @()
+    }
+
+    $content = [System.Collections.Generic.List[string]]::new()
+
+    for ($i = $startIndex; $i -lt $normalizedLines.Count; $i++) {
+        if ($normalizedLines[$i] -match '^##\s+') {
+            break
+        }
+
+        $content.Add([string]$normalizedLines[$i])
+    }
+
+    return @($content)
+}
+
+function Get-FirstNonEmptyLine {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Lines
+    )
+
+    foreach ($line in @($Lines)) {
+        $trimmed = $line.Trim()
+
+        if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+            return $trimmed
+        }
+    }
+
+    return $null
+}
+
+function Get-BulletLines {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Lines,
+        [int]$MaxCount = 2
+    )
+
+    $bullets = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($line in @($Lines)) {
+        $trimmed = $line.Trim()
+
+        if ($trimmed -match '^- ') {
+            $bullets.Add($trimmed.Substring(2).Trim())
+        }
+    }
+
+    if ($bullets.Count -eq 0) {
+        return @()
+    }
+
+    return @($bullets | Select-Object -First $MaxCount)
+}
+
+function Get-MarkdownBriefRecord {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+        [Parameter(Mandatory = $true)]
+        [string]$Kind
+    )
+
+    $lines = @(Get-Content -LiteralPath $Path)
+    $name = [System.IO.Path]::GetFileNameWithoutExtension($Path)
+    $displayName = ($name -split '[-_]') | ForEach-Object {
+        if ($_.Length -gt 0) {
+            $_.Substring(0, 1).ToUpperInvariant() + $_.Substring(1)
+        }
+    }
+    $displayName = $displayName -join ' '
+
+    if ($Kind -eq "Prompt") {
+        $summary = Get-FirstNonEmptyLine -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Goal")
+        $when = Get-BulletLines -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Use This Prompt When") -MaxCount 2
+    }
+    else {
+        $summary = Get-FirstNonEmptyLine -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Purpose")
+        $when = Get-BulletLines -Lines (Get-MarkdownSectionContent -Lines $lines -Heading "Best Used For") -MaxCount 2
+    }
+
+    if ([string]::IsNullOrWhiteSpace($summary)) {
+        $summary = "Use $displayName when a local briefing needs this asset's named workflow or role."
+    }
+
+    return [pscustomobject]@{
+        Kind = $Kind
+        Name = $name
+        DisplayName = $displayName
+        RelativePath = Resolve-Path -Relative $Path
+        Summary = $summary
+        BestFor = @($when)
+        NextUse = if ($when.Count -gt 0) { $when[0] } else { $null }
+    }
+}
+
+function Show-BriefSection {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Title,
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [object[]]$Records
+    )
+
+    Write-Output $Title
+
+    if ($Records.Count -eq 0) {
+        Write-Output "  (none)"
+        Write-Output ""
+        return
+    }
+
+    foreach ($record in $Records) {
+        Write-Output "  - $($record.Name)"
+        Write-Output "    Path: $($record.RelativePath)"
+        Write-Output "    Summary: $($record.Summary)"
+
+        if ($record.BestFor.Count -gt 0) {
+            Write-Output "    Best for: $($record.BestFor -join '; ')"
+        }
+        else {
+            Write-Output "    Best for: (not listed)"
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($record.NextUse)) {
+            Write-Output "    Next use: $($record.NextUse)"
+        }
+        else {
+            Write-Output "    Next use: Review the file directly before choosing it."
+        }
+
+        Write-Output ""
+    }
 }
 
 function Add-AuditResult {
@@ -380,6 +541,64 @@ function Show-Rules {
     ) | Write-Output
 }
 
+function Show-Brief {
+    $docFiles = Get-RelativeFileList -Path $DocsRoot
+    $promptFiles = @()
+    $agentFiles = @()
+
+    if (Test-Path -LiteralPath $PromptsRoot -PathType Container) {
+        $promptFiles = @(
+            Get-ChildItem -LiteralPath $PromptsRoot -Recurse -File -Filter *.md |
+                Where-Object { $_.Name -ne "README.md" } |
+                Sort-Object FullName
+        )
+    }
+
+    if (Test-Path -LiteralPath $SuperAgentsRoot -PathType Container) {
+        $agentFiles = @(
+            Get-ChildItem -LiteralPath $SuperAgentsRoot -File -Filter *.md |
+                Sort-Object FullName
+        )
+    }
+
+    $promptBriefs = @(
+        foreach ($file in $promptFiles) {
+            Get-MarkdownBriefRecord -Path $file.FullName -Kind "Prompt"
+        }
+    )
+
+    $agentBriefs = @(
+        foreach ($file in $agentFiles) {
+            Get-MarkdownBriefRecord -Path $file.FullName -Kind "Agent"
+        }
+    )
+
+    @(
+        "clau-dex local prompt and agent brief"
+        ""
+        "Repo status:"
+        "  Bootstrap phase with local docs, prompt packs, super-agents, and one PowerShell shell entry point."
+        "  Docs: $($docFiles.Count) file(s)"
+        "  Prompt packs: $($promptFiles.Count) file(s)"
+        "  Super-agents: $($agentFiles.Count) file(s)"
+        "  Runtime: no packaged app runtime, dependency manager, or networked integration is present"
+        ""
+        "Purpose:"
+        "  Provide a quick local briefing from checked-in prompt packs and super-agent files."
+        "  This command reads local markdown headings only. It does not search remotely or generate AI summaries."
+        ""
+    ) | Write-Output
+
+    Show-BriefSection -Title "Prompt Packs" -Records $promptBriefs
+    Show-BriefSection -Title "Super-Agents" -Records $agentBriefs
+
+    @(
+        "Picker hint:"
+        "  Start with a prompt pack when the task needs reusable task framing."
+        "  Start with a super-agent when the task needs a reusable role with clear boundaries."
+    ) | Write-Output
+}
+
 function New-AgentScaffold {
     param(
         [string]$AgentName
@@ -461,6 +680,7 @@ switch ($Command) {
     "docs" { Show-Group -Title "Docs" -Path $DocsRoot }
     "prompts" { Show-Group -Title "Prompts" -Path $PromptsRoot }
     "agents" { Show-Group -Title "Agents" -Path $AgentsRoot }
+    "brief" { Show-Brief }
     "rules" { Show-Rules }
     "scaffold-agent" { New-AgentScaffold -AgentName $Name }
 }

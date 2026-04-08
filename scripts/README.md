@@ -3,7 +3,7 @@
 Local bootstrap helpers live here.
 
 ## Current Scripts
-- `clau-dex.ps1`: a small CLI-first shell for repo status, a narrow bootstrap audit, concise prompt/agent briefing, operating-rule summaries, and focused agent scaffolding
+- `clau-dex.ps1`: a small CLI-first shell for repo status, a narrow bootstrap audit, concise prompt/agent briefing, operating-rule summaries, focused agent scaffolding, and prompt-pack scaffolding
 
 ## Current Commands
 - `help`: show the shell command summary
@@ -16,6 +16,7 @@ Local bootstrap helpers live here.
 - `rules`: print the current operating rules summary
 - `scaffold-agent <name>`: create a focused agent scaffold under `agents/super-agents/`
 - `new-agent <name>`: compatibility alias for `scaffold-agent <name>`
+- `scaffold-prompt <name>`: create a prompt-pack scaffold under `prompts/codex/` using the preferred prompt metadata headings
 
 ## Script Rules
 - Keep scripts optional and locally understandable.

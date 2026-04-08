@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "new-agent")]
+    [ValidateSet("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "new-agent", "scaffold-prompt")]
     [string]$Command = "help"
 ,
     [Parameter(Position = 1)]
@@ -14,9 +14,10 @@ $AgentsRoot = Join-Path $RepoRoot "agents"
 $SuperAgentsRoot = Join-Path $AgentsRoot "super-agents"
 $DocsRoot = Join-Path $RepoRoot "docs"
 $PromptsRoot = Join-Path $RepoRoot "prompts"
+$CodexPromptsRoot = Join-Path $PromptsRoot "codex"
 $ScriptsRoot = Join-Path $RepoRoot "scripts"
 $SrcRoot = Join-Path $RepoRoot "src"
-$VisibleCommands = @("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent")
+$VisibleCommands = @("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "scaffold-prompt")
 
 function Get-RelativeFileList {
     param(
@@ -56,6 +57,7 @@ function Show-Help {
         "  brief           Generate a concise local briefing for prompt packs and super-agents"
         "  rules           Print the current operating rules summary"
         "  scaffold-agent  Scaffold a focused agent prompt in agents/super-agents/"
+        "  scaffold-prompt Scaffold a prompt pack in prompts/codex/"
     )
 
     @(
@@ -63,6 +65,7 @@ function Show-Help {
         ""
         "Usage:"
         "  .\scripts\clau-dex.ps1 scaffold-agent <name>"
+        "  .\scripts\clau-dex.ps1 scaffold-prompt <name>"
         "  .\scripts\clau-dex.ps1 [help|status|audit|docs|prompts|agents|brief|rules]"
         ""
         "Commands:"
@@ -96,6 +99,7 @@ function Show-Status {
         ""
         "Orchestration slice:"
         "  scaffold-agent creates a focused agent prompt markdown file under agents/super-agents/"
+        "  scaffold-prompt creates a prompt-pack markdown file under prompts/codex/"
         "  new-agent remains available as a compatibility alias"
         "  audit checks a small hardcoded bootstrap-state surface"
         "  brief generates a structured local summary of checked-in prompt packs and super-agents"
@@ -809,6 +813,83 @@ function New-AgentScaffold {
     ) | Write-Output
 }
 
+function New-PromptScaffold {
+    param(
+        [string]$PromptName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($PromptName)) {
+        throw "scaffold-prompt requires a name. Example: .\scripts\clau-dex.ps1 scaffold-prompt repo-check"
+    }
+
+    $slug = ConvertTo-Slug -Value $PromptName
+
+    if ([string]::IsNullOrWhiteSpace($slug)) {
+        throw "The supplied prompt name must contain letters or numbers."
+    }
+
+    $targetPath = Join-Path $CodexPromptsRoot "$slug.md"
+
+    if (Test-Path -LiteralPath $targetPath) {
+        throw "Prompt scaffold already exists: $targetPath"
+    }
+
+    if (-not (Test-Path -LiteralPath $CodexPromptsRoot)) {
+        New-Item -ItemType Directory -Path $CodexPromptsRoot -Force | Out-Null
+    }
+
+    $title = ($slug -split "-") | ForEach-Object {
+        if ($_.Length -gt 0) {
+            $_.Substring(0, 1).ToUpperInvariant() + $_.Substring(1)
+        }
+    }
+
+    $content = @(
+        "# Codex Prompt Pack: $($title -join ' ')"
+        ""
+        "## Role"
+        "You are Codex operating as a focused prompt-pack executor for `clau-dex`."
+        ""
+        "## Goal"
+        "Define the specific reusable task this prompt pack should support in the current bootstrap-stage repository."
+        ""
+        "## Use This Prompt When"
+        "- the task repeats often enough to deserve a reusable prompt"
+        "- the task needs clear scope, boundaries, and output shape"
+        "- the work should stay local-first, clean-room, and grounded in checked-in repo truth"
+        ""
+        "## Required Inputs"
+        "- the user request"
+        "- the repo files or docs that define the task boundaries"
+        "- the current bootstrap constraints that limit the work"
+        ""
+        "## Operating Rules"
+        "- start with repo inspection, not assumptions"
+        "- keep the task narrow and reviewable"
+        "- do not imply capabilities that are not checked in"
+        "- prefer docs, prompts, and local scripts over speculative runtime additions"
+        ""
+        "## Expected Output"
+        "Produce:"
+        "1. the requested task result"
+        "2. explicit limits or assumptions when they matter"
+        "3. a concise verification note matched to the task"
+        ""
+        "## Completion Standard"
+        "The work is complete when the output is reusable, bootstrap-safe, and ready for a small checkpoint."
+    )
+
+    Set-Content -LiteralPath $targetPath -Value $content
+
+    @(
+        "Created prompt scaffold:"
+        "  $(Resolve-Path -Relative $targetPath)"
+        ""
+        "Next step:"
+        "  Edit the Goal, Use This Prompt When, and Operating Rules sections for the specific prompt pack."
+    ) | Write-Output
+}
+
 switch ($Command) {
     "new-agent" { New-AgentScaffold -AgentName $Name }
     "help" { Show-Help }
@@ -820,4 +901,5 @@ switch ($Command) {
     "brief" { Show-Brief }
     "rules" { Show-Rules }
     "scaffold-agent" { New-AgentScaffold -AgentName $Name }
+    "scaffold-prompt" { New-PromptScaffold -PromptName $Name }
 }

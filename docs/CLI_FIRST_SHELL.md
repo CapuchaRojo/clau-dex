@@ -21,6 +21,7 @@ The first CLI shell is intentionally narrow. It should:
 - generate a concise local briefing from checked-in prompt packs and super-agent files
 - print a concise operating-rules summary from the current repo docs
 - scaffold a focused agent prompt file from a local template shape
+- scaffold a convention-compliant prompt-pack markdown file from a local template shape
 - avoid any dependency on package managers, frameworks, or external services
 
 ## Non-Goals
@@ -46,8 +47,11 @@ The first command surface should stay small and explicit:
 - `rules`
 - `new-agent <name>`
 - `scaffold-agent <name>`
+- `scaffold-prompt <name>`
 
 `new-agent <name>` and `scaffold-agent <name>` both expose the first real orchestration slice in the shell. They create a small Markdown scaffold under `agents/super-agents/` so repeated agent-role authoring starts from a consistent local template instead of a blank file.
+
+`scaffold-prompt <name>` creates a small Markdown prompt-pack scaffold under `prompts/codex/`. It stays intentionally narrow: one local template, one default target area, and the preferred prompt-pack metadata headings already documented for `brief`.
 
 `audit` is the second executable slice. It checks only a narrow bootstrap-state surface:
 - required top-level files and directories that define the documented bootstrap repo shape
@@ -85,4 +89,5 @@ Manual verification for this shell definition:
 - Confirm `rules` summarizes the current operating constraints without implying extra automation.
 - Confirm `new-agent <name>` creates a focused agent prompt file under `agents/super-agents/`.
 - Confirm `scaffold-agent <name>` creates the same focused agent prompt file under `agents/super-agents/`.
+- Confirm `scaffold-prompt <name>` creates a prompt-pack file under `prompts/codex/` with the documented preferred prompt metadata headings.
 - Confirm the script location and non-goals are clear.

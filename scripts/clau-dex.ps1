@@ -101,7 +101,8 @@ function Show-Status {
         "Still out of scope:"
         "  No network behavior"
         "  No API integration"
-        "  No test harness or CI"
+        "  No formal test harness"
+        "  One minimal GitHub Actions workflow validates help, status, and audit"
         "  No implementation runtime in src/"
     ) | Write-Output
 }
@@ -286,18 +287,54 @@ function Show-Audit {
         "go.sum"
     ) -Label "package manifests and lockfiles"
 
-    Test-ForbiddenFilesAbsent -Results $results -RelativePaths @(
-        ".github/workflows",
-        ".gitlab-ci.yml",
-        "azure-pipelines.yml",
-        "Dockerfile",
-        "docker-compose.yml",
-        "docker-compose.yaml",
-        "compose.yml",
-        "compose.yaml",
-        "deploy",
-        "deployment"
-    ) -Label "CI, container, and deployment artifacts"
+    $workflowPath = Join-Path $RepoRoot ".github/workflows/bootstrap-shell-validation.yml"
+
+    if (Test-Path -LiteralPath $workflowPath -PathType Leaf) {
+        Add-AuditResult -Results $results -Level "PASS" -Message ".github/workflows/bootstrap-shell-validation.yml exists"
+    }
+    else {
+        Add-AuditResult -Results $results -Level "FAIL" -Message ".github/workflows/bootstrap-shell-validation.yml is missing"
+    }
+
+    $extraWorkflowFiles = @()
+    $workflowDirectory = Join-Path $RepoRoot ".github/workflows"
+
+    if (Test-Path -LiteralPath $workflowDirectory -PathType Container) {
+        $extraWorkflowFiles = @(
+            Get-ChildItem -LiteralPath $workflowDirectory -File |
+                Where-Object { $_.Name -ne "bootstrap-shell-validation.yml" } |
+                ForEach-Object { ".github/workflows/$($_.Name)" }
+        )
+    }
+
+    $extraInfraArtifacts = @(
+        foreach ($relativePath in @(
+            ".gitlab-ci.yml",
+            "azure-pipelines.yml",
+            "Dockerfile",
+            "docker-compose.yml",
+            "docker-compose.yaml",
+            "compose.yml",
+            "compose.yaml",
+            "deploy",
+            "deployment"
+        )) {
+            $fullPath = Join-Path $RepoRoot $relativePath
+
+            if (Test-Path -LiteralPath $fullPath) {
+                $relativePath
+            }
+        }
+    )
+
+    $extraArtifacts = @($extraWorkflowFiles + $extraInfraArtifacts)
+
+    if ($extraArtifacts.Count -eq 0) {
+        Add-AuditResult -Results $results -Level "PASS" -Message "extra CI, container, and deployment artifacts absent"
+    }
+    else {
+        Add-AuditResult -Results $results -Level "FAIL" -Message "extra CI, container, and deployment artifacts present: $($extraArtifacts -join ', ')"
+    }
 
     $failCount = @($results | Where-Object { $_.Level -eq "FAIL" }).Count
     $warnCount = @($results | Where-Object { $_.Level -eq "WARN" }).Count

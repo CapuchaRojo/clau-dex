@@ -11,8 +11,9 @@ Define and bootstrap a local-first, CLI-first engineering system centered on:
 
 ## Status
 Bootstrap phase. The repository currently contains documentation, prompt and agent folders,
-local Codex configuration, a local CLI shell script with a narrow bootstrap audit command, and no dependency graph or
-test harness.
+local Codex configuration, a local CLI shell script with a narrow bootstrap audit command,
+one minimal GitHub Actions workflow that validates the current shell surface, and no dependency
+graph or formal test harness.
 
 ## Current Layout
 - `docs/`: charter, roadmap, architecture notes, and phased plans
@@ -26,6 +27,13 @@ test harness.
 The PowerShell shell in `scripts/clau-dex.ps1` remains a bootstrap-stage repository helper.
 Its current command surface includes local status inspection, narrow bootstrap auditing, repo
 asset listing, operating-rule summaries, and focused agent scaffolding.
+
+## Bootstrap Validation
+The repository includes one minimal GitHub Actions workflow that runs the current PowerShell
+shell validation surface on `push` and `pull_request`:
+- `./scripts/clau-dex.ps1 help`
+- `./scripts/clau-dex.ps1 status`
+- `./scripts/clau-dex.ps1 audit`
 
 ## Working Rules
 - Treat the checked-in repository as the source of truth.

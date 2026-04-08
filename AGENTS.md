@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Intent
-`clau-dex` is a clean-room, Codex-native, local-first project. Treat the repository as the source of truth. Do not claim or design around capabilities that are not present in this repo. At the time of writing, the installed project assets are bootstrap documentation, prompt/agent folders, a project-scoped Codex config, and no application runtime, package manager lockfile, test harness, or CI pipeline.
+`clau-dex` is a clean-room, Codex-native, local-first project. Treat the repository as the source of truth. Do not claim or design around capabilities that are not present in this repo. At the time of writing, the installed project assets are bootstrap documentation, prompt/agent folders, a project-scoped Codex config, one minimal GitHub Actions validation workflow for the bootstrap shell surface, and no application runtime, package manager lockfile, or formal test harness.
 
 ## Current Repository Reality
 - `clau-dex` is in bootstrap mode, not implementation mode.
@@ -50,7 +50,7 @@ If you add a new top-level directory, update `README.md` and the nearest folder 
 
 ## Execution Guardrails
 - Do not assume internet access, hosted services, or background infrastructure.
-- Do not introduce package manifests, lockfiles, CI configs, containers, or frameworks during bootstrap unless the task explicitly requires them and docs are updated in the same change.
+- Do not introduce package manifests, lockfiles, additional CI configs, containers, or frameworks during bootstrap unless the task explicitly requires them and docs are updated in the same change.
 - Do not reference proprietary, leaked, or unavailable source material. Clean-room means the repository and user-provided context are the only design inputs unless the user clearly approves another source.
 - Keep scripts optional and local. Every new script should be understandable from its file contents and companion docs.
 - Preserve CLI-first direction. If a future interface is discussed, document it as planned until code exists.

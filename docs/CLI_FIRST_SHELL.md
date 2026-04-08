@@ -52,7 +52,8 @@ The first command surface should stay small and explicit:
 - expected docs, prompt, agent, script, and `src/` asset folders
 - `src/` still contains only `README.md`
 - package manifests and lockfiles are absent
-- CI, container, and deployment artifacts are absent
+- one minimal GitHub Actions workflow exists only to validate `help`, `status`, and `audit` on `push` and `pull_request`
+- other CI, container, and deployment artifacts are absent
 - `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it
 
 The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
@@ -62,6 +63,7 @@ Manual verification for this shell definition:
 - Confirm the shell is documented as a local repository helper, not a full runtime.
 - Confirm the command surface remains small and local-first.
 - Confirm `audit` reports PASS / WARN / FAIL results against the documented bootstrap-state checks.
+- Confirm the minimal GitHub Actions workflow stays limited to validating `help`, `status`, and `audit`.
 - Confirm `rules` summarizes the current operating constraints without implying extra automation.
 - Confirm `new-agent <name>` creates a focused agent prompt file under `agents/super-agents/`.
 - Confirm `scaffold-agent <name>` creates the same focused agent prompt file under `agents/super-agents/`.

@@ -20,3 +20,10 @@ Local bootstrap helpers live here.
 - Keep scripts optional and locally understandable.
 - Avoid external dependencies unless they are documented in-repo.
 - Prefer small command surfaces over speculative automation.
+
+## Bootstrap Validation
+One minimal GitHub Actions workflow validates the current PowerShell shell surface on `push`
+and `pull_request` by running:
+- `./scripts/clau-dex.ps1 help`
+- `./scripts/clau-dex.ps1 status`
+- `./scripts/clau-dex.ps1 audit`

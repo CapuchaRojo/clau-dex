@@ -1,0 +1,19 @@
+name: Bootstrap Shell Validation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  bootstrap-shell:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate bootstrap shell surface
+        shell: pwsh
+        run: |
+          ./scripts/clau-dex.ps1 help
+          ./scripts/clau-dex.ps1 status
+          ./scripts/clau-dex.ps1 audit

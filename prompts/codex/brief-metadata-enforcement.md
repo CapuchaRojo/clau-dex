@@ -9,7 +9,7 @@ Harden the metadata contract used by `.\scripts\clau-dex.ps1 brief` so the shell
 ## Use This Prompt When
 - the task is specifically the approved next slice from `docs/NEXT_SLICE_DECISION.md`
 - `brief` metadata behavior for prompt packs or super-agents needs to be clarified, tightened, or minimally validated
-- the work should stay in the bootstrap shell and must not introduce a runtime slice in `src/`
+- the work should stay in the bootstrap shell, keep implementation in `scripts/`, and must not introduce a runtime slice in `src/`
 
 ## Required Inputs
 - the user request
@@ -28,7 +28,7 @@ Harden the metadata contract used by `.\scripts\clau-dex.ps1 brief` so the shell
 - choose warning versus fail behavior deliberately and document that choice in repo language before relying on it
 - add only the smallest validation needed to prove the documented contract; do not turn this slice into a general lint engine, search engine, ranking engine, or repo-wide policy system
 - do not add runtime code in `src/`
-- do not create new shell code just because this prompt pack exists; implement shell changes only when the requested task explicitly requires them
+- this prompt-pack creation task does not add shell code; future shell edits belong only in a separate implementation task that explicitly uses this pack
 - do not broaden the slice into semantic search, embeddings, AI-generated ranking, or repo-wide metadata enforcement
 - keep the change narrow, practical, local-first, and bootstrap-appropriate
 - define and run a task-specific gammit before checkpointing by using `prompts/codex/gammit-pass.md` as the validation companion instead of duplicating its full protocol here
@@ -39,7 +39,7 @@ Produce:
 2. a concise explanation of the exact warning-versus-fail posture chosen for this slice
 3. a task-specific gammit summary with:
    - final changed-file list
-   - the exact implementation slice driven by the prompt
+   - the exact implementation slice the prompt is meant to drive
    - PASS, FAIL, or INCOMPLETE
    - explicit evidence from manual review against `docs/NEXT_SLICE_DECISION.md`
    - explicit evidence from manual review against `docs/METADATA_CONVENTIONS.md`

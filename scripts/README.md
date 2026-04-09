@@ -7,7 +7,7 @@ Local bootstrap helpers live here.
 
 ## Current Commands
 - `help`: show the shell command summary
-- `status`: show the current executable repository surface
+- `status`: show the current executable repository surface plus a concise operational summary of canonical shell boundary, local-state hygiene posture, warning-first bootstrap posture, and the current `src/` runtime absence, while pointing to `audit` as the detailed truth surface
 - `audit`: check a small hardcoded bootstrap-state surface and print a PASS / WARN / FAIL report, including warning-grade `brief` metadata contract checks, narrow local-state hygiene warnings, canonical-shell-boundary checks for prompt packs, super-agents, and the shell entry surface, plus concise operator next-action guidance for current hygiene and boundary warnings
 - `docs`: list checked-in docs
 - `prompts`: list prompt packs

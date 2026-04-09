@@ -15,7 +15,7 @@ That repeated workflow is sufficient to justify one small executable artifact in
 ## First Shell Scope
 The first CLI shell is intentionally narrow. It should:
 - present a help surface
-- report the current repository bootstrap status from checked-in files
+- report the current repository bootstrap status from checked-in files, including a concise operational summary of boundary and hygiene posture
 - audit a small hardcoded bootstrap-state surface from checked-in files
 - list key documentation, prompt, and agent assets
 - generate a concise local briefing from checked-in prompt packs and super-agent files
@@ -67,6 +67,13 @@ The first command surface should stay small and explicit:
 - `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it
 
 The local-state hygiene and canonical-boundary contract for those warnings and failures is documented in `docs/LOCAL_STATE_HYGIENE.md`. That document is the repo-truth explanation for what the bootstrap shell currently treats as residue, what it treats as boundary drift, and why some conditions warn instead of block work.
+
+`status` remains a quick-glance surface rather than a second audit report. It may summarize current shell posture by reusing the current audit truths, especially:
+- whether the canonical `scripts/clau-dex.ps1` shell boundary is intact
+- whether local-state hygiene is currently clean or warning-grade
+- that bootstrap stays warning-first for advisory conditions
+- that `src/` still does not host an implementation runtime
+- that `audit` remains the detailed truth surface
 
 Metadata drift in that contract warns instead of fails so the audit can flag incomplete or fallback-only metadata without blocking bootstrap work. The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
 

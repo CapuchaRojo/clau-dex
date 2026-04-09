@@ -49,7 +49,7 @@ function ConvertTo-Slug {
 function Show-Help {
     $commandLines = @(
         "  help            Show this command summary"
-        "  status          Show the current executable repository surface"
+        "  status          Show a concise operational summary and shell surface"
         "  audit           Check the narrow bootstrap repository invariants"
         "  docs            List checked-in docs"
         "  prompts         List prompt packs"
@@ -80,6 +80,34 @@ function Show-Status {
     $docFiles = Get-RelativeFileList -Path $DocsRoot
     $promptFiles = Get-RelativeFileList -Path $PromptsRoot
     $agentFiles = Get-RelativeFileList -Path $AgentsRoot
+    $auditResults = @(Get-AuditResults)
+    $auditOutcome = Get-AuditOutcome -Results $auditResults
+    $boundaryResult = @($auditResults | Where-Object { $_.Message -like "canonical shell boundary*" } | Select-Object -First 1)
+    $hygieneResult = @($auditResults | Where-Object { $_.Message -like "local-state hygiene *" } | Select-Object -First 1)
+    $boundarySummary = if ($boundaryResult.Count -eq 0) {
+        "unknown"
+    }
+    elseif ($boundaryResult[0].Level -eq "PASS") {
+        "intact"
+    }
+    else {
+        "broken"
+    }
+    $hygieneSummary = if ($hygieneResult.Count -eq 0) {
+        "unknown"
+    }
+    elseif ($hygieneResult[0].Level -eq "PASS") {
+        "clean"
+    }
+    else {
+        "warning-grade residue visible"
+    }
+    $warningPosture = if ($auditOutcome.WarnCount -gt 0) {
+        "warning-first advisories currently visible"
+    }
+    else {
+        "warning-first advisories currently quiet"
+    }
 
     @(
         "clau-dex executable surface"
@@ -88,6 +116,13 @@ function Show-Status {
         "Shell path: .\scripts\clau-dex.ps1"
         "Shell role: local-first repository helper with narrow bootstrap auditing, briefing, and scaffolding commands"
         "Runtime status: no packaged app runtime, dependency manager, or external integration is present"
+        ""
+        "Operational summary:"
+        "  Canonical shell boundary: $boundarySummary"
+        "  Local-state hygiene: $hygieneSummary"
+        "  Bootstrap posture: warning-first for advisory issues ($warningPosture)"
+        "  src/ posture: no implementation runtime in src/"
+        "  Detailed truth surface: run .\scripts\clau-dex.ps1 audit"
         ""
         "Commands:"
         "  $($VisibleCommands -join ', ')"
@@ -693,6 +728,52 @@ function Test-BriefMetadataConvention {
 }
 
 function Show-Audit {
+    $results = @(Get-AuditResults)
+    $auditOutcome = Get-AuditOutcome -Results $results
+
+    Write-Output "clau-dex bootstrap audit"
+    Write-Output ""
+
+    foreach ($result in $results) {
+        Write-Output ("[{0}] {1}" -f $result.Level, $result.Message)
+    }
+
+    $warningGuidance = @(Get-WarningGuidance -Results $results)
+
+    if ($warningGuidance.Count -gt 0) {
+        Write-Output ""
+        Write-Output "Next actions:"
+
+        foreach ($entry in $warningGuidance) {
+            Write-Output "  - $entry"
+        }
+    }
+
+    Write-Output ""
+    Write-Output ("Summary: {0} ({1} pass, {2} warn, {3} fail)" -f $auditOutcome.Overall, $auditOutcome.PassCount, $auditOutcome.WarnCount, $auditOutcome.FailCount)
+}
+
+function Get-AuditOutcome {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [object[]]$Results
+    )
+
+    $failCount = @($Results | Where-Object { $_.Level -eq "FAIL" }).Count
+    $warnCount = @($Results | Where-Object { $_.Level -eq "WARN" }).Count
+    $passCount = @($Results | Where-Object { $_.Level -eq "PASS" }).Count
+    $overall = if ($failCount -gt 0) { "FAIL" } elseif ($warnCount -gt 0) { "WARN" } else { "PASS" }
+
+    return [pscustomobject]@{
+        FailCount = $failCount
+        WarnCount = $warnCount
+        PassCount = $passCount
+        Overall = $overall
+    }
+}
+
+function Get-AuditResults {
     $results = [System.Collections.Generic.List[pscustomobject]]::new()
 
     $requiredFiles = @(
@@ -834,31 +915,7 @@ function Show-Audit {
         Add-AuditResult -Results $results -Level "FAIL" -Message "extra CI, container, and deployment artifacts present: $($extraArtifacts -join ', ')"
     }
 
-    $failCount = @($results | Where-Object { $_.Level -eq "FAIL" }).Count
-    $warnCount = @($results | Where-Object { $_.Level -eq "WARN" }).Count
-    $passCount = @($results | Where-Object { $_.Level -eq "PASS" }).Count
-    $overall = if ($failCount -gt 0) { "FAIL" } elseif ($warnCount -gt 0) { "WARN" } else { "PASS" }
-
-    Write-Output "clau-dex bootstrap audit"
-    Write-Output ""
-
-    foreach ($result in $results) {
-        Write-Output ("[{0}] {1}" -f $result.Level, $result.Message)
-    }
-
-    $warningGuidance = @(Get-WarningGuidance -Results $results)
-
-    if ($warningGuidance.Count -gt 0) {
-        Write-Output ""
-        Write-Output "Next actions:"
-
-        foreach ($entry in $warningGuidance) {
-            Write-Output "  - $entry"
-        }
-    }
-
-    Write-Output ""
-    Write-Output ("Summary: {0} ({1} pass, {2} warn, {3} fail)" -f $overall, $passCount, $warnCount, $failCount)
+    return @($results)
 }
 
 function Show-Rules {

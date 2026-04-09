@@ -8,7 +8,7 @@ Local bootstrap helpers live here.
 ## Current Commands
 - `help`: show the shell command summary
 - `status`: show the current executable repository surface
-- `audit`: check a small hardcoded bootstrap-state surface and print a PASS / WARN / FAIL report, including warning-grade `brief` metadata contract checks for prompt packs and super-agents
+- `audit`: check a small hardcoded bootstrap-state surface and print a PASS / WARN / FAIL report, including warning-grade `brief` metadata contract checks, narrow local-state hygiene warnings, and canonical-shell-boundary checks for prompt packs, super-agents, and the shell entry surface
 - `docs`: list checked-in docs
 - `prompts`: list prompt packs
 - `agents`: list agent definitions
@@ -30,3 +30,7 @@ and `pull_request` by running:
 - `./scripts/clau-dex.ps1 status`
 - `./scripts/clau-dex.ps1 audit`
 - `./scripts/clau-dex.ps1 brief`
+
+## Warning And Fail Posture
+- `audit` warns on advisory or recoverable conditions such as local residue patterns, metadata drift, and helper-only script sprawl in `scripts/`
+- `audit` fails when the documented canonical `clau-dex` shell boundary is broken, such as an alternate `clau-dex` entrypoint outside `scripts/clau-dex.ps1`

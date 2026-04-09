@@ -32,7 +32,8 @@ Key workflow docs include:
 The PowerShell shell in `scripts/clau-dex.ps1` remains a bootstrap-stage repository helper.
 Its current command surface includes local status inspection, narrow bootstrap auditing, repo
 asset listing, operating-rule summaries, a concise local prompt/agent briefing, and focused
-agent scaffolding.
+agent scaffolding. The audit surface stays warning-first for advisory hygiene and metadata drift,
+and fail-grade only when the canonical `scripts/clau-dex.ps1` boundary would be misrepresented.
 
 ## Bootstrap Validation
 The repository uses a task-specific GAMMIT protocol for meaningful work rather than one universal validation command. Current bootstrap validation assets include one minimal GitHub Actions workflow that runs the current PowerShell shell validation surface on `push` and `pull_request`:

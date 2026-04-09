@@ -495,6 +495,134 @@ function Test-ForbiddenFilesAbsent {
     Add-AuditResult -Results $Results -Level "FAIL" -Message "$Label present: $($found -join ', ')"
 }
 
+function Get-ResidueRelativePath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $repoUri = [System.Uri]::new(($RepoRoot.TrimEnd('\') + '\'))
+    $pathUri = [System.Uri]::new($Path)
+    $relative = $repoUri.MakeRelativeUri($pathUri).ToString()
+
+    return [System.Uri]::UnescapeDataString($relative)
+}
+
+function Test-LocalStateHygiene {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[pscustomobject]]$Results
+    )
+
+    $residueExactNames = @(
+        ".DS_Store",
+        "Thumbs.db"
+    )
+    $residueExtensions = @(
+        ".bak",
+        ".log",
+        ".orig",
+        ".rej",
+        ".temp",
+        ".tmp",
+        ".zip"
+    )
+    $residueSuffixes = @("~")
+    $matches = [System.Collections.Generic.List[string]]::new()
+
+    $candidates = @(
+        Get-ChildItem -LiteralPath $RepoRoot -Recurse -Force -File |
+            Where-Object {
+                $_.FullName -notlike "$($RepoRoot)\.git\*" -and
+                $_.FullName -notlike "$($RepoRoot)\.codex\*"
+            } |
+            Sort-Object FullName
+    )
+
+    foreach ($candidate in $candidates) {
+        $name = $candidate.Name
+        $extension = $candidate.Extension.ToLowerInvariant()
+        $relativePath = Get-ResidueRelativePath -Path $candidate.FullName
+
+        if ($residueExactNames -contains $name) {
+            $matches.Add($relativePath)
+            continue
+        }
+
+        if ($residueExtensions -contains $extension) {
+            $matches.Add($relativePath)
+            continue
+        }
+
+        foreach ($suffix in $residueSuffixes) {
+            if ($name.EndsWith($suffix)) {
+                $matches.Add($relativePath)
+                break
+            }
+        }
+    }
+
+    if ($matches.Count -eq 0) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "local-state hygiene check passes: no obvious residue patterns found"
+        return
+    }
+
+    Add-AuditResult -Results $Results -Level "WARN" -Message "local-state hygiene warns: obvious local residue patterns found: $($matches -join ', ')"
+}
+
+function Test-CanonicalShellBoundary {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[pscustomobject]]$Results
+    )
+
+    $entryPointExtensions = @(".bat", ".cmd", ".ps1", ".py", ".sh")
+    $alternateEntryPoints = @(
+        Get-ChildItem -LiteralPath $RepoRoot -Recurse -Force -File |
+            Where-Object {
+                $_.FullName -notlike "$($RepoRoot)\.git\*" -and
+                $_.FullName -notlike "$($RepoRoot)\.codex\*" -and
+                $_.Name -like "clau-dex.*" -and
+                ($entryPointExtensions -contains $_.Extension.ToLowerInvariant()) -and
+                $_.FullName -ne (Join-Path $ScriptsRoot "clau-dex.ps1")
+            } |
+            Sort-Object FullName |
+            ForEach-Object { Get-ResidueRelativePath -Path $_.FullName }
+    )
+
+    if ($alternateEntryPoints.Count -eq 0) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "canonical shell boundary passes: scripts/clau-dex.ps1 is the only clau-dex entrypoint"
+    }
+    else {
+        Add-AuditResult -Results $Results -Level "FAIL" -Message "canonical shell boundary broken: alternate clau-dex entrypoints found outside scripts/clau-dex.ps1: $($alternateEntryPoints -join ', ')"
+    }
+
+    $helperScriptExtensions = @(".bat", ".cmd", ".ps1", ".py", ".sh")
+    $helperScripts = @()
+
+    if (Test-Path -LiteralPath $ScriptsRoot -PathType Container) {
+        $helperScripts = @(
+            Get-ChildItem -LiteralPath $ScriptsRoot -File |
+                Where-Object {
+                    $_.Name -ne "clau-dex.ps1" -and
+                    $_.Name -ne "README.md" -and
+                    ($helperScriptExtensions -contains $_.Extension.ToLowerInvariant())
+                } |
+                Sort-Object FullName |
+                ForEach-Object { Get-ResidueRelativePath -Path $_.FullName }
+        )
+    }
+
+    if ($helperScripts.Count -eq 0) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "canonical shell boundary helper check passes: no extra helper scripts in scripts/"
+        return
+    }
+
+    Add-AuditResult -Results $Results -Level "WARN" -Message "canonical shell boundary warns: helper scripts exist in scripts/ beyond the canonical shell surface: $($helperScripts -join ', ')"
+}
+
 function Test-BriefMetadataConvention {
     param(
         [Parameter(Mandatory = $true)]
@@ -626,6 +754,8 @@ function Show-Audit {
         "go.sum"
     ) -Label "package manifests and lockfiles"
 
+    Test-LocalStateHygiene -Results $results
+    Test-CanonicalShellBoundary -Results $results
     Test-BriefMetadataConvention -Results $results -Kind "Prompt" -RootPath $PromptsRoot
     Test-BriefMetadataConvention -Results $results -Kind "Agent" -RootPath $SuperAgentsRoot
 

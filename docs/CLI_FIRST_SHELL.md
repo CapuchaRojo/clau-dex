@@ -58,12 +58,18 @@ The first command surface should stay small and explicit:
 - expected docs, prompt, agent, script, and `src/` asset folders
 - `src/` still contains only `README.md`
 - package manifests and lockfiles are absent
+- a small hardcoded set of obvious local-state residue patterns warns instead of widening into a generic scanner
 - prompt packs and super-agents still expose the small `brief` metadata contract documented in `docs/METADATA_CONVENTIONS.md`
+- `scripts/clau-dex.ps1` remains the only canonical `clau-dex` shell entrypoint, while extra helper scripts in `scripts/` warn as boundary-drift indicators
 - one minimal GitHub Actions workflow exists only to validate `help`, `status`, and `audit` on `push` and `pull_request`
 - other CI, container, and deployment artifacts are absent
 - `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it
 
 Metadata drift in that contract warns instead of fails so the audit can flag incomplete or fallback-only metadata without blocking bootstrap work. The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
+
+Warning-versus-fail posture for this shell slice:
+- warn when a condition is advisory, recoverable, or operator-awareness oriented, such as obvious local residue patterns, metadata drift, or helper-only script sprawl in `scripts/`
+- fail when the documented canonical shell boundary would otherwise be misrepresented or broken, such as an alternate `clau-dex` entrypoint outside `scripts/clau-dex.ps1`
 
 `brief` is the third executable slice. It turns the checked-in prompt packs and super-agent files into a short local picker brief by reading local markdown headings such as goals, purposes, and best-use bullets. It should:
 - stay fully local and deterministic

@@ -8,11 +8,11 @@ Local bootstrap helpers live here.
 ## Current Commands
 - `help`: show the shell command summary
 - `status`: show the current executable repository surface
-- `audit`: check a small hardcoded bootstrap-state surface and print a PASS / WARN / FAIL report
+- `audit`: check a small hardcoded bootstrap-state surface and print a PASS / WARN / FAIL report, including warning-grade `brief` metadata contract checks for prompt packs and super-agents
 - `docs`: list checked-in docs
 - `prompts`: list prompt packs
 - `agents`: list agent definitions
-- `brief`: print a concise local briefing from checked-in prompt packs and super-agent files
+- `brief`: print a concise local briefing from checked-in prompt packs and super-agent files, with explicit notices when fallback, missing, or empty metadata is encountered
 - `rules`: print the current operating rules summary
 - `scaffold-agent <name>`: create a focused agent scaffold under `agents/super-agents/`
 - `new-agent <name>`: compatibility alias for `scaffold-agent <name>`

@@ -179,8 +179,10 @@ function Get-MarkdownSectionMatch {
 
     foreach ($heading in @($Headings)) {
         $content = @(Get-MarkdownSectionContent -Lines $Lines -Heading $heading)
+        $headingPattern = '^##\s+' + [Regex]::Escape($heading) + '\s*$'
+        $hasHeading = @($Lines | Where-Object { $_ -match $headingPattern }).Count -gt 0
 
-        if ($content.Count -gt 0) {
+        if ($hasHeading) {
             return [pscustomobject]@{
                 Heading = $heading
                 Content = $content
@@ -248,6 +250,7 @@ function Get-BriefConvention {
             BestForHeadings = @("Use This Prompt When", "Use When", "Best Used For")
             PreferredSummaryHeading = "Goal"
             PreferredBestForHeading = "Use This Prompt When"
+            KindLabel = "prompt pack"
         }
     }
 
@@ -256,6 +259,7 @@ function Get-BriefConvention {
         BestForHeadings = @("Best Used For", "Use When", "Recommended For")
         PreferredSummaryHeading = "Purpose"
         PreferredBestForHeading = "Best Used For"
+        KindLabel = "super-agent"
     }
 }
 
@@ -320,7 +324,58 @@ function Get-MarkdownBriefRecord {
         BestFor = @($when)
         NextUse = if ($when.Count -gt 0) { $when[0] } else { $null }
         Notices = @($notices)
+        MetadataState = [pscustomobject]@{
+            KindLabel = $convention.KindLabel
+            PreferredSummaryHeading = $convention.PreferredSummaryHeading
+            PreferredBestForHeading = $convention.PreferredBestForHeading
+            UsedSummaryHeading = $summaryMatch.Heading
+            UsedBestForHeading = $bestForMatch.Heading
+            HasSummaryText = -not [string]::IsNullOrWhiteSpace($summary) -and ($summary -notlike "Missing metadata:*")
+            HasBestForBullets = $when.Count -gt 0
+        }
     }
+}
+
+function Test-BriefMetadataRecord {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[pscustomobject]]$Results,
+        [Parameter(Mandatory = $true)]
+        [pscustomobject]$Record
+    )
+
+    $label = "$($Record.MetadataState.KindLabel) metadata check: $($Record.RelativePath)"
+    $warnReasons = [System.Collections.Generic.List[string]]::new()
+
+    if ([string]::IsNullOrWhiteSpace($Record.MetadataState.UsedSummaryHeading)) {
+        $warnReasons.Add("missing supported summary heading (preferred: ## $($Record.MetadataState.PreferredSummaryHeading))")
+    }
+    elseif ($Record.MetadataState.UsedSummaryHeading -ne $Record.MetadataState.PreferredSummaryHeading) {
+        $warnReasons.Add("used fallback summary heading ## $($Record.MetadataState.UsedSummaryHeading) instead of ## $($Record.MetadataState.PreferredSummaryHeading)")
+    }
+
+    if (-not $Record.MetadataState.HasSummaryText) {
+        $warnReasons.Add("summary text missing or empty under the supported summary headings")
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Record.MetadataState.UsedBestForHeading)) {
+        $warnReasons.Add("missing supported best-for heading (preferred: ## $($Record.MetadataState.PreferredBestForHeading))")
+    }
+    elseif ($Record.MetadataState.UsedBestForHeading -ne $Record.MetadataState.PreferredBestForHeading) {
+        $warnReasons.Add("used fallback best-for heading ## $($Record.MetadataState.UsedBestForHeading) instead of ## $($Record.MetadataState.PreferredBestForHeading)")
+    }
+
+    if (-not $Record.MetadataState.HasBestForBullets) {
+        $warnReasons.Add("best-for bullets missing or empty under the supported best-for headings")
+    }
+
+    if ($warnReasons.Count -eq 0) {
+        Add-AuditResult -Results $Results -Level "PASS" -Message "$label passes"
+        return
+    }
+
+    Add-AuditResult -Results $Results -Level "WARN" -Message "$label warns: $($warnReasons -join '; ')"
 }
 
 function Show-BriefSection {
@@ -456,8 +511,6 @@ function Test-BriefMetadataConvention {
         return
     }
 
-    $convention = Get-BriefConvention -Kind $Kind
-    $preferredHeading = $convention.PreferredSummaryHeading
     $files = @()
 
     if ($Kind -eq "Prompt") {
@@ -479,22 +532,9 @@ function Test-BriefMetadataConvention {
         return
     }
 
-    $missingHeading = @(
-        foreach ($file in $files) {
-            $lines = @(Get-Content -LiteralPath $file.FullName)
-            $match = Get-MarkdownSectionMatch -Lines $lines -Headings @($preferredHeading)
-
-            if ([string]::IsNullOrWhiteSpace($match.Heading)) {
-                Resolve-Path -Relative $file.FullName
-            }
-        }
-    )
-
-    if ($missingHeading.Count -eq 0) {
-        Add-AuditResult -Results $Results -Level "PASS" -Message "$Kind brief metadata check: all files include ## $preferredHeading"
-    }
-    else {
-        Add-AuditResult -Results $Results -Level "WARN" -Message "$Kind brief metadata check: missing ## $preferredHeading in $($missingHeading -join ', ')"
+    foreach ($file in $files) {
+        $record = Get-MarkdownBriefRecord -Path $file.FullName -Kind $Kind
+        Test-BriefMetadataRecord -Results $Results -Record $record
     }
 }
 

@@ -22,9 +22,13 @@ This contract applies to the markdown assets currently consumed by `.\scripts\cl
 
 For each asset kind, the shell has one preferred heading for each field and a small fallback list for compatibility.
 
-`audit` currently performs one metadata convention check per asset kind:
-- prompt packs should include the preferred summary heading
-- super-agents should include the preferred summary heading
+`audit` currently performs one metadata convention check per file:
+- whether a supported summary heading exists
+- whether the preferred summary heading was used or a fallback was needed
+- whether the matched summary section contains usable summary text
+- whether a supported best-use heading exists
+- whether the preferred best-use heading was used or a fallback was needed
+- whether the matched best-use section contains at least one bullet
 
 Missing preferred headings currently produce warnings, not failures.
 
@@ -96,23 +100,25 @@ Those provisional headings are a documentation convention only. No current shell
 ## Missing Metadata Behavior
 If preferred headings are present:
 - `brief` reads them directly
-- `audit` stays green for the current preferred-summary check
+- `audit` stays green for that file's metadata check
 
 If a preferred heading is missing but a supported fallback heading exists:
 - `brief` uses the fallback heading
 - `brief` prints a notice that a fallback heading was used
 - `brief` also prints a convention-check notice naming the missing preferred heading
-- `audit` warns if the preferred summary heading is missing
+- `audit` warns for that file because the preferred heading drifted
 
 If no supported summary heading exists, or the matched summary section has no non-empty text:
 - `brief` shows: `Missing metadata: no summary text found under the supported headings. Review the file directly before using it.`
 - `brief` adds a notice that summary metadata is missing or empty
 - `brief` sets `Next use` to `Review the file directly before choosing it.`
+- `audit` warns for that file because the summary contract is incomplete
 
 If no supported best-use heading exists, or the matched section has no bullet list:
 - `brief` shows: `Best for: Missing metadata: no supported best-for bullets were found.`
 - `brief` adds a notice that best-for metadata is missing or has no bullet list
 - `brief` sets `Next use` to `Review the file directly before choosing it.` if no usable bullet was found
+- `audit` warns for that file because the best-use contract is incomplete
 
 ## Warning Semantics
 Current metadata drift is warning-grade, not failure-grade.
@@ -120,8 +126,12 @@ Current metadata drift is warning-grade, not failure-grade.
 What is currently a warning:
 - a prompt pack is missing `## Goal`
 - a super-agent is missing `## Purpose`
+- a prompt pack is missing `## Use This Prompt When`
+- a super-agent is missing `## Best Used For`
 - `brief` had to use a supported fallback heading
 - `brief` could not read summary or best-use metadata and had to print missing-metadata notices
+- `audit` found missing or empty summary metadata
+- `audit` found missing or empty best-use metadata
 
 What is not yet a failure:
 - missing preferred metadata headings
@@ -130,8 +140,8 @@ What is not yet a failure:
 
 What the shell does not do today:
 - fail `brief` because metadata is incomplete
-- fail `audit` because metadata headings drifted
-- enforce preferred best-use headings in `audit`
+- fail `audit` because metadata headings drifted or a file has incomplete metadata
+- enforce this contract outside prompt packs and super-agents
 
 ## Practical Authoring Guidance
 When creating or updating a prompt pack:
@@ -151,5 +161,5 @@ Manual verification for this contract:
 - review this document against `scripts/clau-dex.ps1`
 - confirm the preferred and fallback headings match `Get-BriefConvention`
 - confirm the missing-metadata behavior matches `Get-MarkdownBriefRecord`
-- confirm the warning behavior matches `Test-BriefMetadataConvention`
+- confirm the warning behavior matches `Test-BriefMetadataConvention` and `Test-BriefMetadataRecord`
 - confirm the document does not imply search, ranking, embeddings, runtime automation, or non-local metadata parsing

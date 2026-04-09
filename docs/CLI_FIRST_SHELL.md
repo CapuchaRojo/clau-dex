@@ -58,13 +58,12 @@ The first command surface should stay small and explicit:
 - expected docs, prompt, agent, script, and `src/` asset folders
 - `src/` still contains only `README.md`
 - package manifests and lockfiles are absent
-- prompt packs still expose the minimum `brief` metadata heading `## Goal`
-- super-agents still expose the minimum `brief` metadata heading `## Purpose`
+- prompt packs and super-agents still expose the small `brief` metadata contract documented in `docs/METADATA_CONVENTIONS.md`
 - one minimal GitHub Actions workflow exists only to validate `help`, `status`, and `audit` on `push` and `pull_request`
 - other CI, container, and deployment artifacts are absent
 - `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it
 
-Missing `brief` metadata headings warn instead of fail so the audit can flag drift without blocking bootstrap work. The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
+Metadata drift in that contract warns instead of fails so the audit can flag incomplete or fallback-only metadata without blocking bootstrap work. The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
 
 `brief` is the third executable slice. It turns the checked-in prompt packs and super-agent files into a short local picker brief by reading local markdown headings such as goals, purposes, and best-use bullets. It should:
 - stay fully local and deterministic
@@ -72,7 +71,7 @@ Missing `brief` metadata headings warn instead of fail so the audit can flag dri
 - help operators choose between prompt packs and super-agent roles faster
 - degrade gracefully when preferred headings are missing by trying a small documented set of heading aliases
 - show explicit missing-metadata notices when summary or best-use fields cannot be read
-- perform a tiny convention check that reports when the preferred prompt or agent headings are absent
+- perform a tiny convention check that reports when preferred headings drifted or usable summary / best-use metadata is missing
 - avoid remote search, network access, embeddings, or AI-generated recommendations
 
 The heading contract for that briefing behavior is documented in `docs/METADATA_CONVENTIONS.md`. That document is the repo truth for preferred headings, supported fallback headings, and current warning-only metadata drift behavior.

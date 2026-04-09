@@ -20,6 +20,19 @@ The current shell treats these filename patterns as residue candidates:
 
 This is a practical bootstrap definition, not a claim that every matching file is always invalid. It exists so the shell can surface likely local leftovers without pretending to understand intent.
 
+## Operator-Local Archive And Export Artifacts
+In this bootstrap repo, operator-local archive and export artifacts are local workflow byproducts such as ad hoc zip exports, one-off backups, or similar hand-carried copies created for the operator's own use.
+
+For repo-truth purposes, these artifacts are:
+- not canonical repository truth
+- temporary local workflow residue when they appear under the checkout
+- normally better archived outside the repo or ignored locally when they are expected for operator work
+- warning-grade hygiene concerns rather than evidence that the checked-in shell surface changed
+
+This distinction matters because the clean-room source of truth is still the checked-in repository shape. A local archive or export artifact may be useful to an operator, but it does not become part of `clau-dex` just by existing inside the working tree for a while.
+
+The current ignore posture may suppress some specific local archive/export filenames, while the bootstrap shell still warns on the broader residue class when such files are visible. Ignoring an operator-local archive artifact does not widen, replace, or weaken the canonical shell boundary; it only reduces noise from a non-canonical local byproduct.
+
 ## Canonical-Boundary Drift
 In `clau-dex`, canonical-boundary drift means the shell surface no longer matches the documented bootstrap truth that `scripts/clau-dex.ps1` is the canonical `clau-dex` entrypoint.
 
@@ -41,7 +54,7 @@ During bootstrap, a warning means:
 - the repo should be reviewed by a human operator
 - the condition is visible enough to record and discuss
 - the shell still considers the bootstrap surface usable
-- `audit` may add a short next-action summary such as review, remove, archive outside the repo, or ignore intentionally when the warning is clearly operator-local
+- `audit` may add a short next-action summary such as review, remove, archive outside the repo, or ignore intentionally when the warning is clearly operator-local and non-canonical
 
 ## Fail-Grade Conditions
 The current shell fails when a condition would make the documented canonical shell boundary or bootstrap repo shape untrue.
@@ -77,5 +90,6 @@ If residue begins to obscure repo truth or repeatedly causes confusion, the stri
 ## Verification
 Manual verification for this contract:
 - Confirm the definitions in this file match the hardcoded local-state and canonical-boundary checks in `scripts/clau-dex.ps1`.
+- Confirm operator-local archive/export artifacts are described as non-canonical local residue that may be archived outside the repo or ignored locally without changing canonical shell truth.
 - Confirm this file describes local-state residue as warning-grade and alternate `clau-dex` entrypoints as fail-grade.
 - Confirm this file keeps the contract bootstrap-stage, narrow, and local-shell specific.

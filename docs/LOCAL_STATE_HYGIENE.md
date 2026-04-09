@@ -41,6 +41,7 @@ During bootstrap, a warning means:
 - the repo should be reviewed by a human operator
 - the condition is visible enough to record and discuss
 - the shell still considers the bootstrap surface usable
+- `audit` may add a short next-action summary such as review, remove, archive outside the repo, or ignore intentionally when the warning is clearly operator-local
 
 ## Fail-Grade Conditions
 The current shell fails when a condition would make the documented canonical shell boundary or bootstrap repo shape untrue.
@@ -60,6 +61,7 @@ That means:
 - warning output is a prompt to inspect and clean up when appropriate
 - warning output is not yet a stop-work signal by itself
 - warning output does not mean the repo is claiming an additional runtime or shell surface
+- actionable guidance should stay concise and operator-facing rather than becoming auto-fix behavior
 
 ## Why Warning-Grade Residue Does Not Yet Block Work
 Bootstrap work is still documentation-first and shell-first. At this stage, the audit aims to keep local conditions visible without overreaching into a generic enforcement system.

@@ -440,6 +440,32 @@ function Add-AuditResult {
     })
 }
 
+function Get-WarningGuidance {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [object[]]$Results
+    )
+
+    $guidance = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($result in @($Results)) {
+        $message = [string]$result.Message
+
+        if ($result.Level -eq "WARN" -and $message -like "local-state hygiene warns:*") {
+            $guidance.Add("Local-state hygiene: review the flagged file(s); remove leftovers you do not need, archive operator-local artifacts outside the repo when they matter, or ignore them intentionally if they are expected for local work.")
+            continue
+        }
+
+        if ($result.Level -eq "WARN" -and $message -like "canonical shell boundary warns:*") {
+            $guidance.Add("Canonical shell boundary: review helper script sprawl in scripts/; remove one-off helpers, archive them outside the canonical shell surface, or keep them intentionally only if the extra script is still justified during bootstrap.")
+            continue
+        }
+    }
+
+    return @($guidance | Select-Object -Unique)
+}
+
 function Test-RepoPath {
     param(
         [Parameter(Mandatory = $true)]
@@ -818,6 +844,17 @@ function Show-Audit {
 
     foreach ($result in $results) {
         Write-Output ("[{0}] {1}" -f $result.Level, $result.Message)
+    }
+
+    $warningGuidance = @(Get-WarningGuidance -Results $results)
+
+    if ($warningGuidance.Count -gt 0) {
+        Write-Output ""
+        Write-Output "Next actions:"
+
+        foreach ($entry in $warningGuidance) {
+            Write-Output "  - $entry"
+        }
     }
 
     Write-Output ""

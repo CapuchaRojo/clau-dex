@@ -61,6 +61,7 @@ The first command surface should stay small and explicit:
 - a small hardcoded set of obvious local-state residue patterns warns instead of widening into a generic scanner
 - prompt packs and super-agents still expose the small `brief` metadata contract documented in `docs/METADATA_CONVENTIONS.md`
 - `scripts/clau-dex.ps1` remains the only canonical `clau-dex` shell entrypoint, while extra helper scripts in `scripts/` warn as boundary-drift indicators
+- warning-grade local-state hygiene and helper-script boundary warnings may include a concise next-action summary for the operator without adding auto-remediation
 - one minimal GitHub Actions workflow exists only to validate `help`, `status`, and `audit` on `push` and `pull_request`
 - other CI, container, and deployment artifacts are absent
 - `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it

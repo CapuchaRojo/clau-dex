@@ -27,6 +27,7 @@ Key workflow docs include:
 - `docs/OPERATING_MODEL.md`: role split and execution flow between CLAU-DEX PRIME and Codex
 - `docs/GAMMIT_PROTOCOL.md`: task-specific validation doctrine for meaningful work
 - `docs/METADATA_CONVENTIONS.md`: documented markdown metadata contract for prompt packs and super-agents consumed by the bootstrap shell
+- `docs/LOCAL_STATE_HYGIENE.md`: current bootstrap contract for local-state residue, canonical-boundary drift, and the shell's warning-versus-fail posture
 
 ## Local Shell Surface
 The PowerShell shell in `scripts/clau-dex.ps1` remains a bootstrap-stage repository helper.
@@ -34,6 +35,7 @@ Its current command surface includes local status inspection, narrow bootstrap a
 asset listing, operating-rule summaries, a concise local prompt/agent briefing, and focused
 agent scaffolding. The audit surface stays warning-first for advisory hygiene and metadata drift,
 and fail-grade only when the canonical `scripts/clau-dex.ps1` boundary would be misrepresented.
+`docs/LOCAL_STATE_HYGIENE.md` defines that contract from the current shell behavior.
 
 ## Bootstrap Validation
 The repository uses a task-specific GAMMIT protocol for meaningful work rather than one universal validation command. Current bootstrap validation assets include one minimal GitHub Actions workflow that runs the current PowerShell shell validation surface on `push` and `pull_request`:

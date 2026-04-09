@@ -65,6 +65,8 @@ The first command surface should stay small and explicit:
 - other CI, container, and deployment artifacts are absent
 - `scripts/clau-dex.ps1` exists and `scripts/README.md` documents it
 
+The local-state hygiene and canonical-boundary contract for those warnings and failures is documented in `docs/LOCAL_STATE_HYGIENE.md`. That document is the repo-truth explanation for what the bootstrap shell currently treats as residue, what it treats as boundary drift, and why some conditions warn instead of block work.
+
 Metadata drift in that contract warns instead of fails so the audit can flag incomplete or fallback-only metadata without blocking bootstrap work. The audit stays intentionally explicit and hardcoded. It is not a generic policy engine, linter, or repo-wide search tool.
 
 Warning-versus-fail posture for this shell slice:

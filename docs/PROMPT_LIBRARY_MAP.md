@@ -34,6 +34,7 @@ Use these when the operator needs help choosing among the current shell surfaces
 
 - `prompts/codex/shell-surface-chooser.md`
 - `prompts/codex/operator-runbook-check.md`
+- `prompts/codex/catalog-maintenance-check.md`
 
 ## Gammit And Checkpoint Prompts
 
@@ -53,7 +54,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 - Start with `Bootstrap And Docs Prompts` when the task is docs-first and should not imply runtime capability.
 - Use `Clean-Room And Reference Prompts` when outside material is involved and the main risk is crossing the clean-room boundary.
 - Use `Hygiene And Boundary Prompts` when the question is about warnings, local residue, canonical shell boundaries, or the narrow `brief` metadata slice.
-- Use `Operator Workflow Prompts` when the operator needs to choose between `status`, `audit`, `brief`, and `checkpoint`, or apply the current runbook/checkpoint posture.
+- Use `Operator Workflow Prompts` when the operator needs to choose between `status`, `audit`, `brief`, and `checkpoint`, apply the current runbook/checkpoint posture, or decide whether prompt and super-agent catalog surfaces have drifted.
 - Use `Gammit And Checkpoint Prompts` when the work needs a task-specific validation plan before editing and explicit pass/fail evidence after editing.
 - Use `ChatGPT Launch Templates` when the task still needs shaping into a reusable launch brief before Codex execution.
 
@@ -62,6 +63,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 ## Codex Prompt Packs
 
 - `bootstrap-docs.md`: docs-first bootstrap drafting for policy, architecture, and workflow clarification.
+- `catalog-maintenance-check.md`: narrow prompt for checking prompt-pack and super-agent catalog drift across metadata, maps, and README surfaces.
 - `brief-metadata-enforcement.md`: narrow prompt for the approved `brief` metadata-contract slice.
 - `clean-room-analysis.md`: clean-room-safe synthesis from allowed reference-informed material.
 - `gammit-pass.md`: task-specific validation planning and final evidence-based pass/fail reporting.

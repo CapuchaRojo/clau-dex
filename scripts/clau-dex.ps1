@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "new-agent", "scaffold-prompt")]
+    [ValidateSet("help", "status", "checkpoint", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "new-agent", "scaffold-prompt")]
     [string]$Command = "help"
 ,
     [Parameter(Position = 1)]
@@ -17,7 +17,7 @@ $PromptsRoot = Join-Path $RepoRoot "prompts"
 $CodexPromptsRoot = Join-Path $PromptsRoot "codex"
 $ScriptsRoot = Join-Path $RepoRoot "scripts"
 $SrcRoot = Join-Path $RepoRoot "src"
-$VisibleCommands = @("help", "status", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "scaffold-prompt")
+$VisibleCommands = @("help", "status", "checkpoint", "audit", "docs", "prompts", "agents", "brief", "rules", "scaffold-agent", "scaffold-prompt")
 
 function Get-RelativeFileList {
     param(
@@ -50,6 +50,7 @@ function Show-Help {
     $commandLines = @(
         "  help            Show this command summary"
         "  status          Show a concise operational summary and shell surface"
+        "  checkpoint      Print the clean-checkpoint preparation checklist"
         "  audit           Check the narrow bootstrap repository invariants"
         "  docs            List checked-in docs"
         "  prompts         List prompt packs"
@@ -66,7 +67,7 @@ function Show-Help {
         "Usage:"
         "  .\scripts\clau-dex.ps1 scaffold-agent <name>"
         "  .\scripts\clau-dex.ps1 scaffold-prompt <name>"
-        "  .\scripts\clau-dex.ps1 [help|status|audit|docs|prompts|agents|brief|rules]"
+        "  .\scripts\clau-dex.ps1 [help|status|checkpoint|audit|docs|prompts|agents|brief|rules]"
         ""
         "Commands:"
     ) + $commandLines + @(
@@ -136,6 +137,7 @@ function Show-Status {
         "  scaffold-agent creates a focused agent prompt markdown file under agents/super-agents/"
         "  scaffold-prompt creates a prompt-pack markdown file under prompts/codex/"
         "  new-agent remains available as a compatibility alias"
+        "  checkpoint prints the operator checklist for preparing a clean checkpoint"
         "  audit checks a small hardcoded bootstrap-state surface"
         "  brief generates a structured local summary of checked-in prompt packs and super-agents"
         ""
@@ -145,6 +147,27 @@ function Show-Status {
         "  No formal test harness"
         "  One minimal GitHub Actions workflow validates help, status, audit, and brief"
         "  No implementation runtime in src/"
+    ) | Write-Output
+}
+
+function Show-Checkpoint {
+    @(
+        "clau-dex clean checkpoint checklist"
+        ""
+        "Use this as a concise operator reminder. Repo truth still lives in docs and checked-in files."
+        ""
+        "Checklist:"
+        "  1. Confirm the repo-visible claim is still narrow, honest, and matches checked-in reality."
+        "  2. Run the task-specific gammit for this change and keep explicit evidence."
+        "  3. Read current warnings, then decide whether to remediate them or ignore them intentionally."
+        "  4. Verify the changed-file list is tight and supports only this checkpoint claim."
+        "  5. Verify no unrelated src/, CI, or workflow changes slipped into the diff."
+        "  6. Review .\scripts\clau-dex.ps1 audit when shell posture or warnings matter."
+        "  7. Re-read docs/OPERATOR_RUNBOOK.md and docs/GAMMIT_PROTOCOL.md if the checkpoint story feels fuzzy."
+        "  8. Prepare one clean, reviewable Conventional Commit checkpoint."
+        ""
+        "Reminder:"
+        "  This command is checklist-only. It does not edit files, run checks, or replace the runbook, gammit prompt, or repo truth."
     ) | Write-Output
 }
 
@@ -1158,6 +1181,7 @@ switch ($Command) {
     "new-agent" { New-AgentScaffold -AgentName $Name }
     "help" { Show-Help }
     "status" { Show-Status }
+    "checkpoint" { Show-Checkpoint }
     "audit" { Show-Audit }
     "docs" { Show-Group -Title "Docs" -Path $DocsRoot }
     "prompts" { Show-Group -Title "Prompts" -Path $PromptsRoot }

@@ -8,6 +8,7 @@ Local bootstrap helpers live here.
 ## Current Commands
 - `help`: show the shell command summary
 - `status`: show the current executable repository surface and a quick-glance operational summary, while pointing to `audit` as the detailed truth surface
+- `checkpoint`: print a concise clean-checkpoint preparation checklist that reinforces the current gammit and checkpoint workflow without running checks or changing files
 - `audit`: check the small hardcoded bootstrap-state surface and print the detailed PASS / WARN / FAIL truth report for shell-boundary, hygiene, and metadata-contract checks
 - `docs`: list checked-in docs
 - `prompts`: list prompt packs
@@ -36,5 +37,6 @@ and `pull_request` by running:
 - `audit` fails when the documented canonical `clau-dex` shell boundary is broken, such as an alternate `clau-dex` entrypoint outside `scripts/clau-dex.ps1`
 
 For operator-facing guidance on when to use `status` versus `audit`, how to read warning-grade
-hygiene drift, and how to prepare a clean checkpoint, see `docs/OPERATOR_RUNBOOK.md`. For a
-reusable Codex launch companion to that workflow, see `prompts/codex/operator-runbook-check.md`.
+hygiene drift, and how `checkpoint` fits into clean checkpoint preparation, see
+`docs/OPERATOR_RUNBOOK.md`. For a reusable Codex launch companion to that workflow, see
+`prompts/codex/operator-runbook-check.md`.

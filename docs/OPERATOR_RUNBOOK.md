@@ -32,6 +32,20 @@ Use it when you need to:
 
 `audit` is the operator truth source for the current shell-first workflow. If `status` and `audit` seem different in tone, trust `audit`.
 
+# When To Use Checkpoint
+
+Use `.\scripts\clau-dex.ps1 checkpoint` when you want the current clean-checkpoint checklist in the shell without hunting through docs first.
+
+Use it when you need a concise reminder to:
+- confirm the repo-visible claim
+- run the task-specific gammit
+- review current warnings and choose remediate versus ignore intentionally
+- verify the changed-file list is tight
+- verify no unrelated `src/`, CI, or workflow changes slipped in
+- prepare one clean commit
+
+`checkpoint` is checklist-style only. It does not run validation, edit files, replace this runbook, or replace `prompts/codex/gammit-pass.md`.
+
 # How To Read Warning-Grade Hygiene Drift
 
 Warning-grade hygiene drift means visible local residue or other advisory drift exists, but the checked-in bootstrap shell contract is still usable.
@@ -64,9 +78,10 @@ Use this checkpoint flow for meaningful bootstrap work:
 2. Make the smallest coherent change that matches one repo-visible claim.
 3. Run the task-specific gammit for that claim.
 4. Read `status` for the quick summary, then `audit` for the exact evidence when shell posture matters.
-5. Record whether any warnings were remediated or intentionally left as non-blocking operator-local drift.
-6. Confirm the changed-file list is tight and does not include unrelated shell, runtime, CI, or workflow edits.
-7. Checkpoint only when the change is reviewable and the recorded evidence supports the claim being made.
+5. Use `checkpoint` when you want the compact shell reminder for the current clean-checkpoint checklist.
+6. Record whether any warnings were remediated or intentionally left as non-blocking operator-local drift.
+7. Confirm the changed-file list is tight and does not include unrelated shell, runtime, CI, or workflow edits.
+8. Checkpoint only when the change is reviewable and the recorded evidence supports the claim being made.
 
 For this repo, a clean checkpoint means small, honest, and reversible. Warning-grade hygiene drift may still allow a checkpoint when the runbooked claim remains true and the warning has been intentionally reviewed.
 
@@ -88,9 +103,11 @@ Manual verification for this runbook:
 - review `docs/GAMMIT_PROTOCOL.md`
 - review `scripts/README.md`
 - run `.\scripts\clau-dex.ps1 status`
+- run `.\scripts\clau-dex.ps1 checkpoint`
 - run `.\scripts\clau-dex.ps1 audit`
 - confirm the runbook matches current shell behavior exactly
 - confirm `status` is described as quick-glance and `audit` as detailed truth
+- confirm `checkpoint` is described as checklist-style only and non-destructive
 - confirm warning-grade hygiene drift is described as operator-facing and non-blocking
 - confirm remediate versus ignore intentionally is explained in bootstrap terms
 - confirm no shell, `src/`, CI, or workflow files were changed for this task

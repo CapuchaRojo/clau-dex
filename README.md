@@ -33,6 +33,7 @@ Key workflow docs include:
 The PowerShell shell in `scripts/clau-dex.ps1` remains a bootstrap-stage repository helper.
 Its command surface stays narrow and local-first:
 - `status`: quick-glance operational summary
+- `checkpoint`: concise clean-checkpoint preparation checklist
 - `audit`: detailed truth surface for the bootstrap shell contract
 - `brief`: concise local prompt/agent picker summary
 - `docs`, `prompts`, `agents`, `rules`: repo inspection surfaces

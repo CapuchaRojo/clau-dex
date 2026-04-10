@@ -2,12 +2,30 @@
 
 Store reusable prompt packs here.
 
+For a fuller workflow-based map of the current prompt library, see `docs/PROMPT_LIBRARY_MAP.md`.
+
 ## Layout
 - `codex/`: execution prompts for Codex-side repo work
 - `chatgpt/`: planning and launch prompts for ChatGPT / CLAU-DEX PRIME
 
-Current reusable launch assets include:
+## Quick Index
+
+Use this README as the short entrypoint. Use `docs/PROMPT_LIBRARY_MAP.md` when you need the richer prompt-family grouping.
+
+Current prompt packs group loosely as:
+
+- bootstrap and docs: `codex/bootstrap-docs.md`, `codex/repo-audit.md`
+- clean-room and reference: `codex/clean-room-analysis.md`, `codex/lawful-reference-audit.md`
+- hygiene and boundaries: `codex/local-state-hygiene.md`, `codex/hygiene-warning-remediation.md`, `codex/brief-metadata-enforcement.md`
+- operator workflow: `codex/shell-surface-chooser.md`, `codex/operator-runbook-check.md`
+- gammit and checkpoint: `codex/gammit-pass.md`
+- ChatGPT launch templates: `chatgpt/spawn-template.md`, `chatgpt/task-brief-template.md`
+
+## Current Reusable Launch Assets
+
 - `codex/lawful-reference-audit.md`: lawful audit lane for public, open-source, owned, or explicitly authorized external repos with explicit prohibited-source boundaries
+- `codex/gammit-pass.md`: task-specific validation companion for choosing and running the right gammit with explicit evidence
+- `codex/shell-surface-chooser.md`: picker-oriented prompt for choosing between `status`, `audit`, `brief`, and `checkpoint`
 - `chatgpt/spawn-template.md`: fuller task-shaping prompt for turning rough intent into a launch brief
 - `chatgpt/task-brief-template.md`: lighter execution-ready brief template for starting consistent scoped work with a proposed gammit and checkpoint
 

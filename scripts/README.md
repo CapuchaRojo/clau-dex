@@ -34,3 +34,7 @@ and `pull_request` by running:
 ## Warning And Fail Posture
 - `audit` warns on advisory or recoverable conditions such as local residue patterns, metadata drift, and helper-only script sprawl in `scripts/`
 - `audit` fails when the documented canonical `clau-dex` shell boundary is broken, such as an alternate `clau-dex` entrypoint outside `scripts/clau-dex.ps1`
+
+For operator-facing guidance on when to use `status` versus `audit`, how to read warning-grade
+hygiene drift, and how to prepare a clean checkpoint, see `docs/OPERATOR_RUNBOOK.md`. For a
+reusable Codex launch companion to that workflow, see `prompts/codex/operator-runbook-check.md`.

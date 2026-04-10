@@ -42,6 +42,10 @@ Its command surface stays narrow and local-first:
 canonical `scripts/clau-dex.ps1` boundary would be misrepresented. `docs/LOCAL_STATE_HYGIENE.md`
 defines that contract from the current shell behavior.
 
+For routine operator shell work and checkpoint preparation, use `docs/OPERATOR_RUNBOOK.md` as the
+workflow source of truth and `prompts/codex/operator-runbook-check.md` as the reusable quick-launch
+companion.
+
 ## Bootstrap Validation
 The repository uses a task-specific GAMMIT protocol for meaningful work rather than one universal validation command. Current bootstrap validation assets include one minimal GitHub Actions workflow that runs the current PowerShell shell validation surface on `push` and `pull_request`:
 - `./scripts/clau-dex.ps1 help`

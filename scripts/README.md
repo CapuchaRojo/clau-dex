@@ -13,7 +13,7 @@ Local bootstrap helpers live here.
 - `docs`: list checked-in docs
 - `prompts`: list prompt packs
 - `agents`: list agent definitions
-- `brief`: print the local picker summary from checked-in prompt packs and super-agent files, starting with a grouped quick scan for ChatGPT launch templates, Codex prompt packs, and current super-agent roles, then detailed entries with first-pick cues and explicit notices when fallback, missing, or empty metadata is encountered
+- `brief`: print the local picker summary from checked-in prompt packs and super-agent files, starting with a grouped quick scan for ChatGPT launch templates, Codex prompt packs, and current super-agent roles, then detailed entries with first-pick cues, a metadata posture line, and explicit notices when fallback, missing, empty, or scaffold-grade metadata is encountered
 - `rules`: print the current operating rules summary
 - `scaffold-agent <name>`: create a focused agent scaffold under `agents/super-agents/`
 - `new-agent <name>`: compatibility alias for `scaffold-agent <name>`

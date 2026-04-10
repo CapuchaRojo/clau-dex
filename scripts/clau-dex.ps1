@@ -295,6 +295,56 @@ function Get-BulletLines {
     return @($bullets | Select-Object -First $MaxCount)
 }
 
+function Get-NormalizedMetadataText {
+    param(
+        [AllowNull()]
+        [string]$Value
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return ""
+    }
+
+    return ([Regex]::Replace($Value.Trim().ToLowerInvariant(), '\s+', ' '))
+}
+
+function Get-WeakBestForBullets {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$Bullets,
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("Prompt", "Agent")]
+        [string]$Kind
+    )
+
+    $weakDefaults = if ($Kind -eq "Prompt") {
+        @(
+            "the task repeats often enough to deserve a reusable prompt",
+            "the task needs clear scope, boundaries, and output shape",
+            "the work should stay local-first, clean-room, and grounded in checked-in repo truth"
+        )
+    }
+    else {
+        @(
+            "one repeated repo task",
+            "one narrow planning or review lane",
+            "one clear output shape"
+        )
+    }
+
+    $weakMatches = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($bullet in @($Bullets)) {
+        $normalizedBullet = Get-NormalizedMetadataText -Value $bullet
+
+        if ($weakDefaults -contains $normalizedBullet) {
+            $weakMatches.Add($bullet)
+        }
+    }
+
+    return @($weakMatches)
+}
+
 function Get-BriefConvention {
     param(
         [Parameter(Mandatory = $true)]
@@ -343,6 +393,14 @@ function Get-MarkdownBriefRecord {
     $bestForMatch = Get-MarkdownSectionMatch -Lines $lines -Headings $convention.BestForHeadings
     $summary = Get-FirstNonEmptyLine -Lines $summaryMatch.Content
     $when = Get-BulletLines -Lines $bestForMatch.Content -MaxCount 2
+    $weakBestForBullets = Get-WeakBestForBullets -Bullets $when -Kind $Kind
+    $strongBestForBullets = @(
+        foreach ($bullet in $when) {
+            if (-not (@($weakBestForBullets) -contains $bullet)) {
+                $bullet
+            }
+        }
+    )
     $notices = [System.Collections.Generic.List[string]]::new()
     $missingConventionHeadings = [System.Collections.Generic.List[string]]::new()
 
@@ -368,6 +426,9 @@ function Get-MarkdownBriefRecord {
     if ($when.Count -eq 0) {
         $notices.Add("Best-for metadata is missing or has no bullet list.")
     }
+    elseif ($strongBestForBullets.Count -eq 0) {
+        $notices.Add("Best-for metadata is present but still scaffold-grade. Replace the current bullets with file-specific picker guidance.")
+    }
 
     if ($missingConventionHeadings.Count -gt 0) {
         $notices.Add("Convention check: missing expected heading(s): $($missingConventionHeadings -join ', ').")
@@ -380,7 +441,7 @@ function Get-MarkdownBriefRecord {
         RelativePath = Resolve-Path -Relative $Path
         Summary = $summary
         BestFor = @($when)
-        NextUse = if ($when.Count -gt 0) { $when[0] } else { $null }
+        NextUse = if ($strongBestForBullets.Count -gt 0) { $strongBestForBullets[0] } else { $null }
         Notices = @($notices)
         MetadataState = [pscustomobject]@{
             KindLabel = $convention.KindLabel
@@ -390,6 +451,8 @@ function Get-MarkdownBriefRecord {
             UsedBestForHeading = $bestForMatch.Heading
             HasSummaryText = -not [string]::IsNullOrWhiteSpace($summary) -and ($summary -notlike "Missing metadata:*")
             HasBestForBullets = $when.Count -gt 0
+            HasStrongBestForBullets = $strongBestForBullets.Count -gt 0
+            WeakBestForBullets = @($weakBestForBullets)
         }
     }
 }
@@ -426,6 +489,9 @@ function Test-BriefMetadataRecord {
 
     if (-not $Record.MetadataState.HasBestForBullets) {
         $warnReasons.Add("best-for bullets missing or empty under the supported best-for headings")
+    }
+    elseif (-not $Record.MetadataState.HasStrongBestForBullets) {
+        $warnReasons.Add("best-for bullets are present but still scaffold-grade and too weak for a reliable picker cue")
     }
 
     if ($warnReasons.Count -eq 0) {
@@ -474,7 +540,7 @@ function Show-BriefSection {
         }
 
         if ($record.Notices.Count -gt 0) {
-            Write-Output "    Notices: $($record.Notices -join ' ')"
+            Write-Output "    Metadata notices: $($record.Notices -join ' ')"
         }
 
         Write-Output ""
@@ -535,6 +601,11 @@ function Get-WarningGuidance {
 
         if ($result.Level -eq "WARN" -and $message -like "canonical shell boundary warns:*") {
             $guidance.Add("Canonical shell boundary: review helper script sprawl in scripts/; remove one-off helpers, archive them outside the canonical shell surface, or keep them intentionally only if the extra script is still justified during bootstrap.")
+            continue
+        }
+
+        if ($result.Level -eq "WARN" -and $message -like "* metadata check:*") {
+            $guidance.Add("Brief metadata contract: use the preferred headings, keep the first summary line non-empty, and replace fallback-only or scaffold-grade best-for bullets with file-specific picker guidance.")
             continue
         }
     }
@@ -1021,6 +1092,14 @@ function Show-Brief {
 
     $chatGptPromptBriefs = @($promptBriefs | Where-Object { $_.RelativePath -like ".\prompts\chatgpt\*" })
     $codexPromptBriefs = @($promptBriefs | Where-Object { $_.RelativePath -like ".\prompts\codex\*" })
+    $allBriefs = @($promptBriefs + $agentBriefs)
+    $metadataNoticeCount = @($allBriefs | Where-Object { $_.Notices.Count -gt 0 }).Count
+    $metadataPosture = if ($metadataNoticeCount -eq 0) {
+        "clean across current prompt packs and super-agents"
+    }
+    else {
+        "warning-grade notices on $metadataNoticeCount item(s); review metadata notices before relying on first-pick cues"
+    }
 
     @(
         "clau-dex local prompt and agent brief"
@@ -1035,6 +1114,7 @@ function Show-Brief {
         "Purpose:"
         "  Provide a quick local briefing from checked-in prompt packs and super-agent files."
         "  This command reads local markdown headings only. It does not search remotely or generate AI summaries."
+        "  Metadata posture: $metadataPosture"
         ""
         "Quick scan:"
         "  Prompt pack families:"

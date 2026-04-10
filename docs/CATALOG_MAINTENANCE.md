@@ -30,6 +30,7 @@ Check these items in the prompt pack itself:
 - the best-use heading uses the preferred prompt-pack heading `## Use This Prompt When`
 - the first non-empty line under `## Goal` is concise, because `.\scripts\clau-dex.ps1 brief` reads that line as the summary
 - the best-use section uses bullets, because `brief` reads bullets rather than paragraphs for prompt-pack fit
+- the best-use bullets are prompt-specific and not just the untouched scaffold defaults, because weak scaffold-grade bullets now warn in both `brief` and `audit`
 
 Then check whether the prompt belongs in the current prompt-library docs surfaces:
 
@@ -48,6 +49,7 @@ Check these items in the super-agent file itself:
 - the best-use heading uses the preferred super-agent heading `## Best Used For`
 - the first non-empty line under `## Purpose` is concise, because `.\scripts\clau-dex.ps1 brief` reads that line as the summary
 - the best-use section uses bullets, because `brief` reads bullet lines for first-pick guidance
+- the best-use bullets are agent-specific and not just the untouched scaffold defaults, because weak scaffold-grade bullets now warn in both `brief` and `audit`
 
 Then check whether the agent belongs in the current agent-library docs surfaces:
 
@@ -65,7 +67,7 @@ Today, `brief` is grounded in a narrow local contract:
 - it reads only checked-in markdown files
 - it reads only supported markdown headings and section content
 - it uses preferred headings plus a small documented fallback list
-- it shows notices when metadata is missing or fallback headings were needed
+- it shows notices when metadata is missing, fallback headings were needed, or best-use bullets are still scaffold-grade
 
 That means maintenance work should check for drift between the asset file and the shell-readable metadata surface.
 

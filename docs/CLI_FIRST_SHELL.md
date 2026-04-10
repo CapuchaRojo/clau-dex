@@ -88,9 +88,10 @@ Warning-versus-fail posture for this shell slice:
 - make the current prompt-pack families and super-agent roles easier to scan before the detailed item list
 - present a quick scan that groups ChatGPT launch templates, Codex prompt packs, and current super-agent roles before the detailed entries
 - keep detailed entries focused on local summary, best-for bullets, and a first-pick cue
+- show one metadata posture line so fallback, missing, empty, or weak metadata is visible without turning `brief` into a policy engine
 - degrade gracefully when preferred headings are missing by trying a small documented set of heading aliases
 - show explicit missing-metadata notices when summary or best-use fields cannot be read
-- perform a tiny convention check that reports when preferred headings drifted or usable summary / best-use metadata is missing
+- perform a tiny convention check that reports when preferred headings drifted or usable summary / best-use metadata is missing or still scaffold-grade
 - avoid remote search, network access, embeddings, or AI-generated recommendations
 
 The heading contract for that briefing behavior is documented in `docs/METADATA_CONVENTIONS.md`. That document is the repo truth for preferred headings, supported fallback headings, and current warning-only metadata drift behavior.

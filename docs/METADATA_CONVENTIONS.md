@@ -29,6 +29,7 @@ For each asset kind, the shell has one preferred heading for each field and a sm
 - whether a supported best-use heading exists
 - whether the preferred best-use heading was used or a fallback was needed
 - whether the matched best-use section contains at least one bullet
+- whether the matched best-use bullets are file-specific enough to act as a picker cue rather than still looking like untouched scaffold defaults
 
 Missing preferred headings currently produce warnings, not failures.
 
@@ -58,6 +59,7 @@ Create or refine a reusable task prompt for a narrow bootstrap-stage workflow.
 How `brief` reads prompt pack metadata:
 - summary text: the first non-empty line under the first supported summary heading it finds
 - best-use text: up to the first two bullet lines under the first supported best-use heading it finds
+- weak best-use check: warning-grade if those picked bullets still match the default scaffold bullets from `scaffold-prompt`
 
 ## Super-Agent Conventions
 Preferred headings for super-agents:
@@ -85,6 +87,7 @@ Handle one focused repository lane with clear boundaries and reviewable output.
 How `brief` reads super-agent metadata:
 - summary text: the first non-empty line under the first supported summary heading it finds
 - best-use text: up to the first two bullet lines under the first supported best-use heading it finds
+- weak best-use check: warning-grade if those picked bullets still match the default scaffold bullets from `scaffold-agent`
 
 ## Future Shell-Consumable Markdown Assets
 If a future shell command starts consuming another markdown asset type, document that contract in repo docs before depending on it.
@@ -120,6 +123,16 @@ If no supported best-use heading exists, or the matched section has no bullet li
 - `brief` sets `Next use` to `Review the file directly before choosing it.` if no usable bullet was found
 - `audit` warns for that file because the best-use contract is incomplete
 
+If a supported best-use heading exists and contains bullets, but the picked bullets are still scaffold-grade defaults:
+- `brief` keeps showing the bullets so the checked-in file is still visible
+- `brief` adds a metadata notice that the best-use guidance is still scaffold-grade
+- `brief` suppresses `Next use` and falls back to `Review the file directly before choosing it.`
+- `audit` warns for that file because the best-use contract is too weak for a reliable picker cue
+
+`brief` also reports one metadata posture line near the top:
+- `clean` when no prompt packs or super-agents currently carry metadata notices
+- `warning-grade notices on N item(s)` when fallback, missing, empty, or scaffold-grade metadata was detected
+
 ## Warning Semantics
 Current metadata drift is warning-grade, not failure-grade.
 
@@ -130,13 +143,16 @@ What is currently a warning:
 - a super-agent is missing `## Best Used For`
 - `brief` had to use a supported fallback heading
 - `brief` could not read summary or best-use metadata and had to print missing-metadata notices
+- `brief` found best-use bullets, but they were still scaffold-grade defaults rather than file-specific guidance
 - `audit` found missing or empty summary metadata
 - `audit` found missing or empty best-use metadata
+- `audit` found best-use bullets that were present but too weak for a reliable picker cue
 
 What is not yet a failure:
 - missing preferred metadata headings
 - use of currently documented fallback headings
 - missing best-use headings or missing best-use bullets
+- scaffold-grade best-use bullets
 
 What the shell does not do today:
 - fail `brief` because metadata is incomplete
@@ -149,17 +165,20 @@ When creating or updating a prompt pack:
 - use `## Use This Prompt When`
 - keep the first line under `## Goal` concise because `brief` reads only the first non-empty line
 - use bullet lines under `## Use This Prompt When` because `brief` reads bullets, not paragraphs, for best-use text
+- replace the default scaffold bullets with prompt-specific usage cues before treating the prompt pack as fully brief-ready
 
 When creating or updating a super-agent:
 - use `## Purpose`
 - use `## Best Used For`
 - keep the first line under `## Purpose` concise because `brief` reads only the first non-empty line
 - use bullet lines under `## Best Used For` because `brief` reads bullets, not paragraphs, for best-use text
+- replace the default scaffold bullets with agent-specific usage cues before treating the super-agent as fully brief-ready
 
 ## Verification
 Manual verification for this contract:
 - review this document against `scripts/clau-dex.ps1`
 - confirm the preferred and fallback headings match `Get-BriefConvention`
 - confirm the missing-metadata behavior matches `Get-MarkdownBriefRecord`
+- confirm the weak best-use handling matches `Get-WeakBestForBullets` and `Get-MarkdownBriefRecord`
 - confirm the warning behavior matches `Test-BriefMetadataConvention` and `Test-BriefMetadataRecord`
 - confirm the document does not imply search, ranking, embeddings, runtime automation, or non-local metadata parsing

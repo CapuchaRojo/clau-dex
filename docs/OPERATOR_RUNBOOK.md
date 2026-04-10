@@ -20,6 +20,18 @@ Use it when you need to confirm:
 
 `status` is the fast orientation surface. It summarizes current audit truths and explicitly points back to `audit` for detailed evidence.
 
+# When To Use Brief
+
+Use `.\scripts\clau-dex.ps1 brief` when you need the local picker surface for current prompt packs and super-agents.
+
+Use it when you need to:
+- scan the currently checked-in prompt-pack families before reading individual entries
+- compare current super-agent roles quickly
+- choose a likely first pick from local metadata without opening every file first
+- keep the decision local and deterministic rather than relying on search or generated recommendations
+
+`brief` is the shell picker surface. It is for fast local selection, not repo-health evidence. Trust `status` for quick posture and `audit` for detailed contract evidence.
+
 # When To Use Audit
 
 Use `.\scripts\clau-dex.ps1 audit` when you need the detailed truth surface for the current bootstrap contract.

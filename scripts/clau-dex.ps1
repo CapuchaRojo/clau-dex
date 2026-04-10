@@ -442,7 +442,8 @@ function Show-BriefSection {
         [string]$Title,
         [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
-        [object[]]$Records
+        [object[]]$Records,
+        [string]$CueLabel = "First pick"
     )
 
     Write-Output $Title
@@ -454,7 +455,7 @@ function Show-BriefSection {
     }
 
     foreach ($record in $Records) {
-        Write-Output "  - $($record.Name)"
+        Write-Output "  - $($record.DisplayName) [$($record.Name)]"
         Write-Output "    Path: $($record.RelativePath)"
         Write-Output "    Summary: $($record.Summary)"
 
@@ -466,10 +467,10 @@ function Show-BriefSection {
         }
 
         if (-not [string]::IsNullOrWhiteSpace($record.NextUse)) {
-            Write-Output "    Next use: $($record.NextUse)"
+            Write-Output "    $CueLabel`: $($record.NextUse)"
         }
         else {
-            Write-Output "    Next use: Review the file directly before choosing it."
+            Write-Output "    $CueLabel`: Review the file directly before choosing it."
         }
 
         if ($record.Notices.Count -gt 0) {
@@ -478,6 +479,23 @@ function Show-BriefSection {
 
         Write-Output ""
     }
+}
+
+function Show-BriefCatalogLine {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Title,
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [object[]]$Records
+    )
+
+    if ($Records.Count -eq 0) {
+        Write-Output "${Title}: (none)"
+        return
+    }
+
+    Write-Output "${Title}: $((@($Records | ForEach-Object { $_.DisplayName })) -join ', ')"
 }
 
 function Add-AuditResult {
@@ -1001,6 +1019,9 @@ function Show-Brief {
         }
     )
 
+    $chatGptPromptBriefs = @($promptBriefs | Where-Object { $_.RelativePath -like ".\prompts\chatgpt\*" })
+    $codexPromptBriefs = @($promptBriefs | Where-Object { $_.RelativePath -like ".\prompts\codex\*" })
+
     @(
         "clau-dex local prompt and agent brief"
         ""
@@ -1015,14 +1036,28 @@ function Show-Brief {
         "  Provide a quick local briefing from checked-in prompt packs and super-agent files."
         "  This command reads local markdown headings only. It does not search remotely or generate AI summaries."
         ""
+        "Quick scan:"
+        "  Prompt pack families:"
     ) | Write-Output
 
-    Show-BriefSection -Title "Prompt Packs" -Records $promptBriefs
-    Show-BriefSection -Title "Super-Agents" -Records $agentBriefs
+    Show-BriefCatalogLine -Title "    ChatGPT launch templates" -Records $chatGptPromptBriefs
+    Show-BriefCatalogLine -Title "    Codex prompt packs" -Records $codexPromptBriefs
+
+    @(
+        "  Super-agent roles:"
+    ) | Write-Output
+
+    Show-BriefCatalogLine -Title "    Current roles" -Records $agentBriefs
+    Write-Output ""
+
+    Show-BriefSection -Title "Prompt Packs" -Records $chatGptPromptBriefs -CueLabel "First pick"
+    Show-BriefSection -Title "Prompt Packs (Codex)" -Records $codexPromptBriefs -CueLabel "First pick"
+    Show-BriefSection -Title "Super-Agents" -Records $agentBriefs -CueLabel "First pick"
 
     @(
         "Picker hint:"
-        "  Start with a prompt pack when the task needs reusable task framing."
+        "  Start with ChatGPT launch templates when the task still needs shaping before Codex edits."
+        "  Start with a Codex prompt pack when the task needs reusable execution framing."
         "  Start with a super-agent when the task needs a reusable role with clear boundaries."
     ) | Write-Output
 }

@@ -85,6 +85,7 @@ Warning-versus-fail posture for this shell slice:
 - stay fully local and deterministic
 - summarize only checked-in prompt and agent assets
 - help operators choose between prompt packs and super-agent roles faster
+- make the current prompt-pack families and super-agent roles easier to scan before the detailed item list
 - degrade gracefully when preferred headings are missing by trying a small documented set of heading aliases
 - show explicit missing-metadata notices when summary or best-use fields cannot be read
 - perform a tiny convention check that reports when preferred headings drifted or usable summary / best-use metadata is missing

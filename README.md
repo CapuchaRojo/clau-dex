@@ -31,11 +31,16 @@ Key workflow docs include:
 
 ## Local Shell Surface
 The PowerShell shell in `scripts/clau-dex.ps1` remains a bootstrap-stage repository helper.
-Its current command surface includes local status inspection, narrow bootstrap auditing, repo
-asset listing, operating-rule summaries, a concise local prompt/agent briefing, and focused
-agent scaffolding. The audit surface stays warning-first for advisory hygiene and metadata drift,
-and fail-grade only when the canonical `scripts/clau-dex.ps1` boundary would be misrepresented.
-`docs/LOCAL_STATE_HYGIENE.md` defines that contract from the current shell behavior.
+Its command surface stays narrow and local-first:
+- `status`: quick-glance operational summary
+- `audit`: detailed truth surface for the bootstrap shell contract
+- `brief`: concise local prompt/agent picker summary
+- `docs`, `prompts`, `agents`, `rules`: repo inspection surfaces
+- `scaffold-agent`, `scaffold-prompt`: focused local scaffolding helpers
+
+`audit` stays warning-first for advisory hygiene and metadata drift, and fail-grade only when the
+canonical `scripts/clau-dex.ps1` boundary would be misrepresented. `docs/LOCAL_STATE_HYGIENE.md`
+defines that contract from the current shell behavior.
 
 ## Bootstrap Validation
 The repository uses a task-specific GAMMIT protocol for meaningful work rather than one universal validation command. Current bootstrap validation assets include one minimal GitHub Actions workflow that runs the current PowerShell shell validation surface on `push` and `pull_request`:

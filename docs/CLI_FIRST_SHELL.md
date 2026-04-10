@@ -68,7 +68,7 @@ The first command surface should stay small and explicit:
 
 The local-state hygiene and canonical-boundary contract for those warnings and failures is documented in `docs/LOCAL_STATE_HYGIENE.md`. That document is the repo-truth explanation for what the bootstrap shell currently treats as residue, what it treats as boundary drift, and why some conditions warn instead of block work.
 
-`status` remains a quick-glance surface rather than a second audit report. It may summarize current shell posture by reusing the current audit truths, especially:
+`status` remains the quick-glance surface rather than a second audit report. It may summarize current shell posture by reusing the current audit truths, especially:
 - whether the canonical `scripts/clau-dex.ps1` shell boundary is intact
 - whether local-state hygiene is currently clean or warning-grade
 - that bootstrap stays warning-first for advisory conditions
@@ -81,7 +81,7 @@ Warning-versus-fail posture for this shell slice:
 - warn when a condition is advisory, recoverable, or operator-awareness oriented, such as obvious local residue patterns, metadata drift, or helper-only script sprawl in `scripts/`
 - fail when the documented canonical shell boundary would otherwise be misrepresented or broken, such as an alternate `clau-dex` entrypoint outside `scripts/clau-dex.ps1`
 
-`brief` is the third executable slice. It turns the checked-in prompt packs and super-agent files into a short local picker brief by reading local markdown headings such as goals, purposes, and best-use bullets. It should:
+`brief` is the third executable slice. It is the local picker summary for checked-in prompt packs and super-agent files, built from local markdown headings such as goals, purposes, and best-use bullets. It should:
 - stay fully local and deterministic
 - summarize only checked-in prompt and agent assets
 - help operators choose between prompt packs and super-agent roles faster

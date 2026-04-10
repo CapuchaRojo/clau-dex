@@ -7,12 +7,12 @@ Local bootstrap helpers live here.
 
 ## Current Commands
 - `help`: show the shell command summary
-- `status`: show the current executable repository surface plus a concise operational summary of canonical shell boundary, local-state hygiene posture, warning-first bootstrap posture, and the current `src/` runtime absence, while pointing to `audit` as the detailed truth surface
-- `audit`: check a small hardcoded bootstrap-state surface and print a PASS / WARN / FAIL report, including warning-grade `brief` metadata contract checks, narrow local-state hygiene warnings, canonical-shell-boundary checks for prompt packs, super-agents, and the shell entry surface, plus concise operator next-action guidance for current hygiene and boundary warnings
+- `status`: show the current executable repository surface and a quick-glance operational summary, while pointing to `audit` as the detailed truth surface
+- `audit`: check the small hardcoded bootstrap-state surface and print the detailed PASS / WARN / FAIL truth report for shell-boundary, hygiene, and metadata-contract checks
 - `docs`: list checked-in docs
 - `prompts`: list prompt packs
 - `agents`: list agent definitions
-- `brief`: print a concise local briefing from checked-in prompt packs and super-agent files, with explicit notices when fallback, missing, or empty metadata is encountered
+- `brief`: print the local picker summary from checked-in prompt packs and super-agent files, with explicit notices when fallback, missing, or empty metadata is encountered
 - `rules`: print the current operating rules summary
 - `scaffold-agent <name>`: create a focused agent scaffold under `agents/super-agents/`
 - `new-agent <name>`: compatibility alias for `scaffold-agent <name>`

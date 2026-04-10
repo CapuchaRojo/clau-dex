@@ -86,6 +86,8 @@ Warning-versus-fail posture for this shell slice:
 - summarize only checked-in prompt and agent assets
 - help operators choose between prompt packs and super-agent roles faster
 - make the current prompt-pack families and super-agent roles easier to scan before the detailed item list
+- present a quick scan that groups ChatGPT launch templates, Codex prompt packs, and current super-agent roles before the detailed entries
+- keep detailed entries focused on local summary, best-for bullets, and a first-pick cue
 - degrade gracefully when preferred headings are missing by trying a small documented set of heading aliases
 - show explicit missing-metadata notices when summary or best-use fields cannot be read
 - perform a tiny convention check that reports when preferred headings drifted or usable summary / best-use metadata is missing

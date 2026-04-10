@@ -26,11 +26,12 @@ Use `.\scripts\clau-dex.ps1 brief` when you need the local picker surface for cu
 
 Use it when you need to:
 - scan the currently checked-in prompt-pack families before reading individual entries
+- distinguish ChatGPT launch templates from Codex prompt packs quickly
 - compare current super-agent roles quickly
 - choose a likely first pick from local metadata without opening every file first
 - keep the decision local and deterministic rather than relying on search or generated recommendations
 
-`brief` is the shell picker surface. It is for fast local selection, not repo-health evidence. Trust `status` for quick posture and `audit` for detailed contract evidence.
+`brief` is the shell picker surface. It starts with a quick grouped scan, then shows detailed local entries with best-for bullets and a first-pick cue. It is for fast local selection, not repo-health evidence. Trust `status` for quick posture and `audit` for detailed contract evidence.
 
 # When To Use Audit
 

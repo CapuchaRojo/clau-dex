@@ -35,7 +35,7 @@ Its command surface stays narrow and local-first:
 - `status`: quick-glance operational summary
 - `checkpoint`: concise clean-checkpoint preparation checklist
 - `audit`: detailed truth surface for the bootstrap shell contract
-- `brief`: concise local prompt/agent picker summary
+- `brief`: concise local prompt/agent picker summary with a grouped quick scan and per-item first-pick cues
 - `docs`, `prompts`, `agents`, `rules`: repo inspection surfaces
 - `scaffold-agent`, `scaffold-prompt`: focused local scaffolding helpers
 

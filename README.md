@@ -24,6 +24,7 @@ and no dependency graph or formal test harness.
 - `.codex/config.toml`: project-scoped Codex defaults
 
 Key workflow docs include:
+- `docs/WORKFLOW_ENTRY_MAP.md`: concise entry map for choosing the right shell surface or supporting workflow doc
 - `docs/OPERATING_MODEL.md`: role split and execution flow between CLAU-DEX PRIME and Codex
 - `docs/GAMMIT_PROTOCOL.md`: task-specific validation doctrine for meaningful work
 - `docs/METADATA_CONVENTIONS.md`: documented markdown metadata contract for prompt packs and super-agents consumed by the bootstrap shell

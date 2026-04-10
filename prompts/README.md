@@ -11,6 +11,7 @@ For a fuller workflow-based map of the current prompt library, see `docs/PROMPT_
 ## Quick Index
 
 Use this README as the short entrypoint. Use `docs/PROMPT_LIBRARY_MAP.md` when you need the richer prompt-family grouping.
+If a prompt-pack change affects catalog discoverability, review `docs/CATALOG_MAINTENANCE.md` before leaving maps or indexes behind.
 
 Current prompt packs group loosely as:
 

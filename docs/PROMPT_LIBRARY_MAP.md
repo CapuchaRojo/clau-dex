@@ -4,6 +4,8 @@ This map helps operators find the right current prompt family in `clau-dex` fast
 
 It summarizes the prompt packs that are actually checked in under `prompts/codex/` and `prompts/chatgpt/`, grouped by practical workflow purpose rather than by folder alone.
 
+If prompt-pack catalog coverage changes, use `docs/CATALOG_MAINTENANCE.md` to keep this map and the short README surfaces aligned.
+
 # Prompt Families
 
 ## Bootstrap And Docs Prompts

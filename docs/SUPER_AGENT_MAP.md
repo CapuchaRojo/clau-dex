@@ -3,6 +3,7 @@
 This map helps operators choose among the current `clau-dex` super-agents quickly without changing shell behavior or restating each full agent definition.
 
 Use it as a concise picker for the checked-in super-agent library, especially alongside `.\scripts\clau-dex.ps1 brief`.
+If super-agent catalog coverage changes, use `docs/CATALOG_MAINTENANCE.md` to keep this map and the short README surfaces aligned.
 
 # Current Super-Agents
 

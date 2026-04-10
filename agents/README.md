@@ -9,6 +9,7 @@ Current reusable super-agents include:
 - `super-agents/reference-auditor.md`: lawful reference-review lane for public, open-source, owned, or explicitly authorized external repos or materials
 
 For a concise operator-facing guide to when to use each current super-agent, see [`docs/SUPER_AGENT_MAP.md`](../docs/SUPER_AGENT_MAP.md).
+If a super-agent change affects catalog discoverability, review `docs/CATALOG_MAINTENANCE.md` before leaving maps or indexes behind.
 
 ## Conventions
 - Keep one file per agent role.

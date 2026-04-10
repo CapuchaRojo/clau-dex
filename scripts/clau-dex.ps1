@@ -1059,6 +1059,8 @@ function Show-Brief {
         "  Start with ChatGPT launch templates when the task still needs shaping before Codex edits."
         "  Start with a Codex prompt pack when the task needs reusable execution framing."
         "  Start with a super-agent when the task needs a reusable role with clear boundaries."
+        "  Need richer prompt-family context? See docs/PROMPT_LIBRARY_MAP.md."
+        "  Need super-agent overlap or first-pick guidance? See docs/SUPER_AGENT_MAP.md."
     ) | Write-Output
 }
 

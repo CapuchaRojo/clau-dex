@@ -35,6 +35,7 @@ Use these when the task is about local-state residue, warning interpretation, ca
 Use these when the operator needs help choosing among the current shell surfaces or applying the runbook honestly during routine work.
 
 - `prompts/codex/shell-surface-chooser.md`
+- `prompts/codex/workflow-entry-chooser.md`
 - `prompts/codex/operator-runbook-check.md`
 - `prompts/codex/catalog-maintenance-check.md`
 
@@ -75,6 +76,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 - `operator-runbook-check.md`: practical operator guidance for shell use, warnings, and checkpoint prep.
 - `repo-audit.md`: checked-in repo truth audit against current docs and structure.
 - `shell-surface-chooser.md`: fast picker for `status`, `audit`, `brief`, and `checkpoint`.
+- `workflow-entry-chooser.md`: narrow chooser for the full current entry surface across shell commands and supporting workflow docs.
 
 ## ChatGPT Prompt Packs
 

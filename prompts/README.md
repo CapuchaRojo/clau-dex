@@ -18,7 +18,7 @@ Current prompt packs group loosely as:
 - bootstrap and docs: `codex/bootstrap-docs.md`, `codex/repo-audit.md`
 - clean-room and reference: `codex/clean-room-analysis.md`, `codex/lawful-reference-audit.md`
 - hygiene and boundaries: `codex/local-state-hygiene.md`, `codex/hygiene-warning-remediation.md`, `codex/brief-metadata-enforcement.md`
-- operator workflow: `codex/shell-surface-chooser.md`, `codex/operator-runbook-check.md`, `codex/catalog-maintenance-check.md`
+- operator workflow: `codex/shell-surface-chooser.md`, `codex/workflow-entry-chooser.md`, `codex/operator-runbook-check.md`, `codex/catalog-maintenance-check.md`
 - gammit and checkpoint: `codex/gammit-pass.md`
 - ChatGPT launch templates: `chatgpt/spawn-template.md`, `chatgpt/task-brief-template.md`
 
@@ -28,6 +28,7 @@ Current prompt packs group loosely as:
 - `codex/gammit-pass.md`: task-specific validation companion for choosing and running the right gammit with explicit evidence
 - `codex/catalog-maintenance-check.md`: narrow catalog-maintenance prompt for deciding whether prompt-pack or super-agent changes need metadata, map, or README alignment work
 - `codex/shell-surface-chooser.md`: picker-oriented prompt for choosing between `status`, `audit`, `brief`, and `checkpoint`
+- `codex/workflow-entry-chooser.md`: picker-oriented prompt for choosing across current shell entry surfaces and their supporting workflow docs
 - `chatgpt/spawn-template.md`: fuller task-shaping prompt for turning rough intent into a launch brief
 - `chatgpt/task-brief-template.md`: lighter execution-ready brief template for starting consistent scoped work with a proposed gammit and checkpoint
 

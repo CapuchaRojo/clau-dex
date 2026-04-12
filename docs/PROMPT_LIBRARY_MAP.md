@@ -41,6 +41,7 @@ Use these when the operator needs help choosing among the current shell surfaces
 - `prompts/codex/workflow-entry-chooser.md`
 - `prompts/codex/operator-runbook-check.md`
 - `prompts/codex/catalog-maintenance-check.md`
+- `prompts/codex/parser-lane-chooser.md`
 
 ## Gammit And Checkpoint Prompts
 
@@ -64,6 +65,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 - Use `prompts/codex/metadata-triage-check.md` in that family when the immediate need is to classify current metadata warnings into fix-now, defer, or split-later without widening into general cleanup.
 - Use `prompts/codex/metadata-fix-check.md` in that family when the next step is to repair one prompt pack or super-agent metadata surface narrowly after triage already says the fix belongs in the current checkpoint.
 - Use `Operator Workflow Prompts` when the operator needs to choose between `status`, `audit`, `brief`, and `checkpoint`, apply the current runbook/checkpoint posture, or decide whether prompt and super-agent catalog surfaces have drifted.
+- Use `prompts/codex/parser-lane-chooser.md` in that family when the immediate question is which parser-adjacent lane fits best across current shell/docs work, current metadata workflow, parser-readiness planning, and a later source-level parser lane.
 - Use `Gammit And Checkpoint Prompts` when the work needs a task-specific validation plan before editing and explicit pass/fail evidence after editing.
 - Use `ChatGPT Launch Templates` when the task still needs shaping into a reusable launch brief before Codex execution.
 
@@ -83,6 +85,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 - `lawful-reference-audit.md`: lawful external reference audit with explicit do-not-import boundaries.
 - `local-state-hygiene.md`: narrow shell-first hygiene and canonical-boundary hardening slice.
 - `operator-runbook-check.md`: practical operator guidance for shell use, warnings, and checkpoint prep.
+- `parser-lane-chooser.md`: narrow chooser for routing parser-adjacent work across current shell/docs, metadata workflow, parser-readiness planning, and a later `src/` parser lane.
 - `repo-audit.md`: checked-in repo truth audit against current docs and structure.
 - `shell-surface-chooser.md`: fast picker for `status`, `audit`, `brief`, and `checkpoint`.
 - `workflow-entry-chooser.md`: narrow chooser for the full current entry surface across shell commands and supporting workflow docs.

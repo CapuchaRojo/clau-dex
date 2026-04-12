@@ -29,6 +29,7 @@ Use these when the task is about local-state residue, warning interpretation, ca
 - `prompts/codex/local-state-hygiene.md`
 - `prompts/codex/hygiene-warning-remediation.md`
 - `prompts/codex/brief-metadata-enforcement.md`
+- `prompts/codex/metadata-workflow-chooser.md`
 - `prompts/codex/metadata-triage-check.md`
 - `prompts/codex/metadata-fix-check.md`
 
@@ -59,6 +60,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 - Start with `Bootstrap And Docs Prompts` when the task is docs-first and should not imply runtime capability.
 - Use `Clean-Room And Reference Prompts` when outside material is involved and the main risk is crossing the clean-room boundary.
 - Use `Hygiene And Boundary Prompts` when the question is about warnings, local residue, canonical shell boundaries, or the narrow `brief` metadata slice.
+- Use `prompts/codex/metadata-workflow-chooser.md` in that family when the immediate need is to choose between examples, triage, narrow repair, and contract-side enforcement without widening into broader workflow planning.
 - Use `prompts/codex/metadata-triage-check.md` in that family when the immediate need is to classify current metadata warnings into fix-now, defer, or split-later without widening into general cleanup.
 - Use `prompts/codex/metadata-fix-check.md` in that family when the next step is to repair one prompt pack or super-agent metadata surface narrowly after triage already says the fix belongs in the current checkpoint.
 - Use `Operator Workflow Prompts` when the operator needs to choose between `status`, `audit`, `brief`, and `checkpoint`, apply the current runbook/checkpoint posture, or decide whether prompt and super-agent catalog surfaces have drifted.
@@ -72,6 +74,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 - `bootstrap-docs.md`: docs-first bootstrap drafting for policy, architecture, and workflow clarification.
 - `catalog-maintenance-check.md`: narrow prompt for checking prompt-pack and super-agent catalog drift across metadata, maps, and README surfaces.
 - `brief-metadata-enforcement.md`: narrow prompt for the approved `brief` metadata-contract slice.
+- `metadata-workflow-chooser.md`: narrow chooser for the current metadata workflow step across examples, triage, narrow repair, and contract-side enforcement.
 - `metadata-triage-check.md`: operator-facing warning triage for brief/audit metadata issues that need a narrow next action.
 - `metadata-fix-check.md`: narrow repair prompt for fixing one prompt-pack or super-agent metadata surface without widening into general cleanup.
 - `clean-room-analysis.md`: clean-room-safe synthesis from allowed reference-informed material.

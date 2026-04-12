@@ -49,6 +49,7 @@ Current metadata warning categories in operator terms:
 - scaffold-grade metadata: best-for bullets exist, but they still read like untouched scaffold defaults rather than file-specific picker guidance
 
 Use `prompts/codex/metadata-triage-check.md` when the warning is real but the next step is not obvious. It is the reusable narrow triage prompt for choosing fix now, defer intentionally, or split into a separate metadata checkpoint.
+For the concise routing pair, use `docs/METADATA_WORKFLOW_MAP.md` as the workflow map and `prompts/codex/metadata-workflow-chooser.md` when you want a quick recommendation for the right current metadata step before acting.
 For fast workflow lookup, pair `docs/METADATA_WARNING_EXAMPLES.md` for category examples with `prompts/codex/metadata-triage-check.md` for triage and `prompts/codex/brief-metadata-enforcement.md` when an approved metadata-contract fix is actually in scope.
 
 # Fix Now, Defer, Or Split

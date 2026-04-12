@@ -33,6 +33,51 @@ Use it when you need to:
 
 `brief` is the shell picker surface. It starts with a quick grouped scan, then shows detailed local entries with best-for bullets and a first-pick cue. It is for fast local selection, not repo-health evidence. Trust `status` for quick posture and `audit` for detailed contract evidence.
 
+# How To Respond To Metadata Warnings
+
+Treat metadata warnings from `brief` and `audit` as warning-grade operator decisions, not automatic stop signs.
+
+Use this response path:
+- read `brief` first when you need to know whether the warning weakens the picker cue for a prompt pack or super-agent
+- read `audit` when you need the exact warning category and repo-truth evidence before a checkpoint
+- keep the current shell posture intact: warnings call for an operator decision, not an invented failure state
+
+Current metadata warning categories in operator terms:
+- missing metadata: a supported heading or bullet surface is absent, so `brief` cannot read the expected summary or best-for guidance cleanly
+- fallback metadata: `brief` found a supported alias, but the file drifted from the preferred heading
+- empty metadata: the heading exists, but the section still does not provide usable summary text or usable best-for bullets
+- scaffold-grade metadata: best-for bullets exist, but they still read like untouched scaffold defaults rather than file-specific picker guidance
+
+Use `prompts/codex/metadata-triage-check.md` when the warning is real but the next step is not obvious. It is the reusable narrow triage prompt for choosing fix now, defer intentionally, or split into a separate metadata checkpoint.
+
+# Fix Now, Defer, Or Split
+
+Fix metadata now when:
+- the current checkpoint already edits the affected prompt pack, super-agent, or closely related catalog docs
+- the warning blocks a reliable picker cue, such as missing metadata, empty metadata, or scaffold-grade bullets on the asset you are actively touching
+- the repair is small and local, such as restoring the preferred heading, adding concise summary text, or replacing scaffold bullets with file-specific guidance
+
+Defer metadata intentionally when:
+- the current checkpoint is about a different narrow claim and the warning does not make that claim dishonest
+- the asset remains usable enough under the current warning-first contract, such as a fallback heading that still reads correctly in `brief`
+- you can honestly leave the warning in place without implying the metadata is clean
+
+Split metadata cleanup into a separate checkpoint when:
+- the warning is real, but cleaning it up would widen the task into broader prompt-pack, super-agent, map, or README maintenance
+- multiple files show related metadata drift and the current task is not primarily a metadata-maintenance pass
+- the current claim can still be supported honestly without folding extra catalog cleanup into this diff
+
+Usual default by category:
+- missing metadata: usually fix now when the affected asset is in scope; otherwise split if repair would widen the checkpoint
+- fallback metadata: usually defer intentionally if the file still reads clearly; fix now when you are already editing that file
+- empty metadata: usually fix now because the shell surface is present but not usable
+- scaffold-grade metadata: usually fix now when you need a trustworthy picker cue; otherwise split into a focused metadata cleanup checkpoint
+
+If you defer intentionally:
+- say that the warning remains warning-grade under the current shell contract
+- do not restate it as a PASS
+- keep the current checkpoint claim narrow and honest
+
 # When To Use Audit
 
 Use `.\scripts\clau-dex.ps1 audit` when you need the detailed truth surface for the current bootstrap contract.

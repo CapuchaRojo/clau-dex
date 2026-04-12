@@ -128,7 +128,7 @@ Choose it when:
 - New task, quick orientation: start with `status`, then move to the runbook if you need process guidance.
 - Need exact shell evidence before making a claim: start with `status`, then escalate to `audit`.
 - Need to choose a prompt pack or super-agent: start with `brief`, then read `docs/PROMPT_LIBRARY_MAP.md` or `docs/SUPER_AGENT_MAP.md` if the shell summary is not enough.
-- Need to place parser-adjacent work honestly: read `docs/PARSER_READINESS_MAP.md` for the boundary map; for the concrete parser planning contract, use `docs/PARSER_RECORD_SPEC.md` and `docs/PARSER_IMPLEMENTATION_ENTRY_CRITERIA.md`; then use `prompts/codex/parser-lane-chooser.md` when you want a concise lane recommendation without changing shell behavior.
+- Need to place parser-adjacent work honestly: read `docs/PARSER_READINESS_MAP.md` for the boundary map; for the concrete parser planning contract, use `docs/PARSER_RECORD_SPEC.md` and `docs/PARSER_IMPLEMENTATION_ENTRY_CRITERIA.md`; for the implementation-facing planning pair, use `docs/PARSER_IMPLEMENTATION_BLUEPRINT.md` and `docs/PARSER_SHELL_HANDOFF_SPEC.md`; then use `prompts/codex/parser-lane-chooser.md` when you want a concise lane recommendation without changing shell behavior.
 - Preparing a clean commit: use `checkpoint`, then confirm the fuller workflow in `docs/OPERATOR_RUNBOOK.md` if needed.
 - Updating prompt or agent catalog surfaces: use `docs/CATALOG_MAINTENANCE.md` first, then verify the result with `brief`.
 - Unsure whether a question is about shell behavior or operator process: use `docs/CLI_FIRST_SHELL.md` for shell contract questions and `docs/OPERATOR_RUNBOOK.md` for workflow questions.

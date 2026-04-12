@@ -31,7 +31,7 @@ Need a quick workflow-step recommendation first? Start with `codex/metadata-work
 - `codex/gammit-pass.md`: task-specific validation companion for choosing and running the right gammit with explicit evidence
 - `codex/catalog-maintenance-check.md`: narrow catalog-maintenance prompt for deciding whether prompt-pack or super-agent changes need metadata, map, or README alignment work
 - `codex/metadata-workflow-chooser.md`: narrow chooser for deciding whether the immediate metadata need is examples, triage, narrow repair, or contract-side enforcement
-- `codex/parser-lane-chooser.md`: narrow chooser for deciding whether parser-adjacent work belongs in shell/docs, metadata workflow, parser-readiness planning, or a later `src/` parser lane; for the concrete planning contract, see `docs/PARSER_RECORD_SPEC.md` and `docs/PARSER_IMPLEMENTATION_ENTRY_CRITERIA.md`
+- `codex/parser-lane-chooser.md`: narrow chooser for deciding whether parser-adjacent work belongs in shell/docs, metadata workflow, parser-readiness planning, or a later `src/` parser lane; for the concrete planning contract, see `docs/PARSER_RECORD_SPEC.md` and `docs/PARSER_IMPLEMENTATION_ENTRY_CRITERIA.md`, and for the implementation-facing planning pair, see `docs/PARSER_IMPLEMENTATION_BLUEPRINT.md` and `docs/PARSER_SHELL_HANDOFF_SPEC.md`
 - `codex/metadata-triage-check.md`: operator-facing metadata warning triage for choosing fix-now, defer, or split-into-its-own-checkpoint
 - `codex/metadata-fix-check.md`: narrow metadata-repair prompt for making one prompt pack or super-agent more brief-ready after triage says the fix belongs now
 - `codex/shell-surface-chooser.md`: picker-oriented prompt for choosing between `status`, `audit`, `brief`, and `checkpoint`

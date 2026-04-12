@@ -605,7 +605,7 @@ function Get-WarningGuidance {
         }
 
         if ($result.Level -eq "WARN" -and $message -like "* metadata check:*") {
-            $guidance.Add("Brief metadata contract: use the preferred headings, keep the first summary line non-empty, and replace fallback-only or scaffold-grade best-for bullets with file-specific picker guidance.")
+            $guidance.Add("Brief metadata contract: use the preferred headings, keep the first summary line non-empty, and replace fallback-only or scaffold-grade best-for bullets with file-specific picker guidance. Need triage help? See prompts/codex/metadata-triage-check.md.")
             continue
         }
     }
@@ -1100,6 +1100,12 @@ function Show-Brief {
     else {
         "warning-grade notices on $metadataNoticeCount item(s); review metadata notices before relying on first-pick cues"
     }
+    $metadataTriagePointer = if ($metadataNoticeCount -gt 0) {
+        "  Metadata triage: see prompts/codex/metadata-triage-check.md when you need a narrow fix-now, defer, or split decision."
+    }
+    else {
+        $null
+    }
 
     @(
         "clau-dex local prompt and agent brief"
@@ -1115,6 +1121,7 @@ function Show-Brief {
         "  Provide a quick local briefing from checked-in prompt packs and super-agent files."
         "  This command reads local markdown headings only. It does not search remotely or generate AI summaries."
         "  Metadata posture: $metadataPosture"
+        $metadataTriagePointer
         ""
         "Quick scan:"
         "  Prompt pack families:"

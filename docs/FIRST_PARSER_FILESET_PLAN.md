@@ -2,6 +2,8 @@
 
 This document defines the likely initial `src/parser/` file set for the first real parser code checkpoint in `clau-dex` without starting implementation in this task.
 
+The first narrow `src/parser/` lane has now landed, so this document should be read as the preflight plan that shaped that initial fileset rather than as a claim that parser implementation is still absent.
+
 It exists so the repo can name one narrow parser footprint, the boundaries immediately around it, and the files that should still remain absent when that first checkpoint lands.
 
 # Current Constraints

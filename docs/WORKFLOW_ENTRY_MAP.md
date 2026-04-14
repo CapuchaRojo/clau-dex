@@ -12,7 +12,7 @@ It is the best first stop when you want to confirm:
 
 - whether the canonical shell boundary still looks intact
 - whether local-state hygiene is clean or warning-grade
-- whether `src/` is still runtime-free
+- whether `src/` still avoids a broader implementation runtime
 - which shell commands are available right now
 
 If `status` tells you enough, stay at the shell level. If you need the underlying evidence behind the quick summary, escalate to `audit`. If you need operator process rather than shell posture, move to `docs/OPERATOR_RUNBOOK.md`.

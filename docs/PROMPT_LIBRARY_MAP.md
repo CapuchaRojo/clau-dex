@@ -85,7 +85,7 @@ Use these when CLAU-DEX PRIME or ChatGPT is shaping work before Codex starts edi
 - `lawful-reference-audit.md`: lawful external reference audit with explicit do-not-import boundaries.
 - `local-state-hygiene.md`: narrow shell-first hygiene and canonical-boundary hardening slice.
 - `operator-runbook-check.md`: practical operator guidance for shell use, warnings, and checkpoint prep.
-- `parser-lane-chooser.md`: narrow chooser for routing parser-adjacent work across current shell/docs, metadata workflow, parser-readiness planning, and a later `src/` parser lane.
+- `parser-lane-chooser.md`: narrow chooser for routing parser-adjacent work across current shell/docs, metadata workflow, parser-readiness planning, and a later `src/` parser lane; for parser-shell consumption planning, pair it with `docs/PARSER_SHELL_ADAPTER_BLUEPRINT.md` and `docs/FIRST_SHELL_CONSUMPTION_CANDIDATE_PLAN.md`.
 - `repo-audit.md`: checked-in repo truth audit against current docs and structure.
 - `shell-surface-chooser.md`: fast picker for `status`, `audit`, `brief`, and `checkpoint`.
 - `workflow-entry-chooser.md`: narrow chooser for the full current entry surface across shell commands and supporting workflow docs.
